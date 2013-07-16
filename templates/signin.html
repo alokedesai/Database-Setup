@@ -1,0 +1,14 @@
+<html>
+  <head>
+    <title>Log in</title>
+  </head>
+  <body>
+    <form action = {{url_for("login")}} method=post>
+      <p> Username: </p>
+      <input type=text name="username" value="username"></input>
+      <p> Password: </p>
+      <input type=text name="password" value="password"></input>
+      <input type=submit value="Sign in"></input>
+    </form>
+  </body>
+</html>

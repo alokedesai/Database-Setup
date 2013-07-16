@@ -48,7 +48,7 @@ def load_user(userid):
 def index():
     # return str(User.query.all()[0].password) # I don't think this will 
     
-    return render_template("new.html",user=user)
+    return render_template("new.html")
 
 @app.route("/results", methods=["POST"])
 def results():
@@ -90,14 +90,15 @@ def login():
             if password == users.password:
                 user = load_user(users.id)
                 login_user(user)
-                flash("Logged in successfully.")
-                return render_template("results.html")
+                flash('Logged ' + theUser + ' in successfully.')
+                return redirect('/')
             else: return "Invalid Password!"        
     return "Invalid Username!!!"
 @app.route("/logout")
 @login_required
 def logout():
     logout_user()
+    flash('Logged out successfully.')
     return redirect('/')
 
 @app.route("/settings")

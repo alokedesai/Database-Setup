@@ -4,7 +4,6 @@
 </head>
 <body>
   <h2>New Account</h2>
-
   <form action="{{ url_for('results') }}" method=post>
     <p>
       Username:
@@ -18,6 +17,15 @@
       
   </form>
   <a href = "/signin"><h3>Login</h3></a>
-  <h4>{{ user }}</h4>
+  
+  {% with messages = get_flashed_messages() %}
+  {% if messages %}
+  <ul class=flashes>
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  {% endwith %}
  </body>
  </html>

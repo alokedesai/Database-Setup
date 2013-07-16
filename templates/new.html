@@ -1,0 +1,21 @@
+<html>
+<head>
+<title>test</title>
+</head>
+<body>
+  <h2>New Account</h2>
+
+  <form action="{{ url_for('results') }}" method=post>
+    <p>
+      Username:
+      <input type=text name="username" value="username">
+    <p>Password:
+    <p><input type=text  name = "password" value="password"></input>
+      Email:
+      <p><input type=text  name = "email" value="email"></input>
+    <p>
+      <input type=submit value="Create entry">
+      
+  </form>
+ </body>
+ </html>

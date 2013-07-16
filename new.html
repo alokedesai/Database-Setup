@@ -1,0 +1,18 @@
+<html>
+<head>
+<title>test</title>
+</head>
+<body>
+  <h2>New Todo Item</h2>
+  <form action="{{url_for('results')}}" method="POST">
+    <p>
+      Title:
+      <input type=text name=title value="test">
+    <p>Text:
+    <p><textarea name=text rows=10 cols=40>test</textarea>
+    <p>
+      <input type=submit value="Create entry">
+      <a href="#">Back to list</a>
+  </form>
+ </body>
+ </html>

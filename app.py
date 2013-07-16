@@ -4,7 +4,7 @@ from sqlalchemy.exc import IntegrityError
 from forms import LoginForm
 from flask.ext.openid import OpenID
 import os
-import flask.ext.login
+from flask.ext.login import login_user, logout_user, current_user, login_required, LoginManager
 
 app = Flask(__name__)
 app.secret_key = "some_"

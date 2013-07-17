@@ -19,8 +19,7 @@ class User(db.Model):
     username = db.Column(db.String(80), unique=True)
     email = db.Column(db.String(120), unique=True)
     password = db.Column(db.String(12), unique=False)
-    messages = db.relationship('Message', backref = 'author', lazy = 'dynamic')
-    skills = db.relationship('Skill', backref = 'author', lazy = 'dynamic')
+    messages = db.relationship('Messages', backref = 'sender', lazy = 'dynamic')
     
     def is_authenticated(self):
         return True
@@ -42,24 +41,23 @@ class User(db.Model):
     def __repr__(self):
         return "<User %r>" % self.username
 
-class Message(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    sender = db.Column(db.String(80), unique=True)
-    body = db.Column(db.String(140), unique=True)
+class Messages(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    body = db.Column(db.String(2000))
+    sender = db.Column(db.String(80))
     timestamp = db.Column(db.DateTime)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __repr__(self):
-        return "<Message %r>" % self.body
-    
-class Skill(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    skill = db.Column(db.String(80), unique=True)
+        return '<Post %r>' % (self.body)
+
+class Skills(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    skill = db.Column(db.String(80))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __repr__(self):
-        return "<Skill %r>" % self.skill
-
+        return '<Post %r>' % (self.skill)
 
 @login_manager.user_loader
 def load_user(userid):
@@ -80,7 +78,6 @@ def results():
     for users in User.query.all():
         if theUser == users.username:
             error = "already a username"
-
         if email == users.email:
             error= "already a registered email"
 
@@ -89,15 +86,6 @@ def results():
         db.session.add(x)
         try :
             db.session.commit()
-            auth = User.query.filter_by(username=theUser).first()
-            for s in skills:
-                y = Skill(skill = s, author = auth)
-                db.session.add(y)
-                try:
-                    db.session.commit()
-                except Exception as e:
-                    db.session.rollback()
-                    return "broken"
         except Exception as e:
             db.session.rollback()
             
@@ -123,7 +111,7 @@ def login():
                 user = load_user(users.id)
                 login_user(user)
                 flash('Logged ' + theUser + ' in successfully.')
-                return redirect('/settings/'+theUser)
+                return redirect('/')
             else: return "Invalid Password!"        
     return "Invalid Username!!!"
 @app.route("/logout")
@@ -133,16 +121,10 @@ def logout():
     flash('Logged out successfully.')
     return redirect('/')
 
-@app.route("/settings/<username>")
+@app.route("/settings")
 @login_required
-def settings(username):
-    s = ""
-    user = User.query.filter_by(username=username).first()
-    skill = user.skills.all()
-    for SKILLS in skill:
-        s = s + SKILLS.skill + " "
-    return s
-
+def settings():
+    return "yay"
 if __name__ == "__main__":
     db.session.rollback()
     db.create_all()

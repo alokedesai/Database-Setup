@@ -1,0 +1,17 @@
+<html>
+<head>
+  <title>Compose</title>
+</head>
+<body>
+  <form action="{{ url_for('start')}}" method=post>
+    <input type=text style="display:none;" value="{{username}}" name="user"></input>
+    <p>From: {{username}}</p>
+    <p>To: <input type=text data-placeholder="To User" name="to"></input></p>
+    <p>Subject: <input type=text data-placeholder="Subject" name="subject"></input></p>
+    <input type=text style="width:500px;height=500px;" name="body"></input>
+    <input type=submit value="Start Conversation"></input>
+  </form>
+  <script>
+  </script>
+</body>
+</html>

@@ -6,16 +6,18 @@ from flask.ext.openid import OpenID
 import os
 from flask.ext.login import login_user, logout_user, current_user, login_required, LoginManager
 import unicodedata
-
+import datetime
 
 app = Flask(__name__)
 app.secret_key = "some_"
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///test1.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///app.db"
 
 db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
+def str(x):
+    return unicodedata.normalize('NFKD',x).encode('ascii','ignore')
 
 
 class User(db.Model):
@@ -23,7 +25,6 @@ class User(db.Model):
     username = db.Column(db.String(80), unique=True)
     email = db.Column(db.String(120), unique=True)
     password = db.Column(db.String(12), unique=False)
-    messages = db.relationship('Message', backref = 'author', lazy = 'dynamic')
     skills = db.relationship('Skills',backref='user',lazy='dynamic')
     
     def is_authenticated(self):
@@ -46,15 +47,27 @@ class User(db.Model):
     def __repr__(self):
         return "<User %r>" % self.username
 
-class Message(db.Model):
+class Conversation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    sender = db.Column(db.String(80), unique=True)
-    body = db.Column(db.String(140), unique=True)
+    subject = db.Column(db.String(80))
+    user1 = db.Column(db.String(80))
+    user2 = db.Column(db.String(80))
     timestamp = db.Column(db.DateTime)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    messages = db.relationship('Message',backref='conversation',lazy='dynamic')
 
     def __repr__(self):
-        return "<Message %r>" % self.body
+        return "<Conversation %r>" % self.subject
+	
+class Message(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    sender = db.Column(db.String(80))
+    body = db.Column(db.String(140))
+    timestamp = db.Column(db.DateTime)
+    conversation_id = db.Column(db.Integer, db.ForeignKey('conversation.id'))
+
+    def __repr__(self):
+        return "<Message %r>" % self.sender
+
     
 class Skills(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -140,12 +153,91 @@ def logout():
 @app.route("/settings/<username>")
 @login_required
 def settings(username):
-    s = ""
+    cS = []
+    cR = []
+    s = []
     user = User.query.filter_by(username=username).first()
     skill = user.skills.all()
+    conversationsS = Conversation.query.filter_by(user1=unicodedata.normalize('NFKD',user.username).encode('ascii','ignore')).all()
+    conversationsR = Conversation.query.filter_by(user2=unicodedata.normalize('NFKD',user.username).encode('ascii','ignore')).all()
+    for c in conversationsS:
+        cS.append({'user': str(c.user2), 'subject': str(c.subject), 'timestamp': c.timestamp, 'id': c.id})
+    for c in conversationsR:
+        cR.append({'user': str(c.user1), 'subject': str(c.subject), 'timestamp': c.timestamp, 'id': c.id})
     for SKILLS in skill:
-        s = s + SKILLS.skill + " "
-    return s
+        s.append(unicodedata.normalize('NFKD',SKILLS.skill).encode('ascii','ignore'))
+    return render_template("settings.html",username=username,s=s,cS=cS,cR=cR)
+
+@app.route("/conversation/<ID>/<user>")
+@login_required
+def conversation(ID,user):
+    c = Conversation.query.get(ID)
+    subject = str(c.subject)
+    m=[]
+    messages = c.messages.all()
+    for M in messages:
+        m.append({'sender':str(M.sender),'body':str(M.body),'timestamp':M.timestamp})
+    return render_template("conversation.html",m=m,user=user,subject=subject,ID=ID)
+
+@app.route("/reply/<ID>/<user>",methods=["GET"])
+@login_required
+def reply(ID,user):
+    c = Conversation.query.get(ID)
+    subject = str(c.subject)
+
+    return render_template("reply.html",ID=ID,user=user)
+
+@app.route("/replying",methods=["GET","POST"])
+@login_required
+def replying():
+    ID = request.form['conversation']
+    Body = request.form['body']
+    user = request.form['user']
+    c = Conversation.query.get(ID)
+    if str(c.user2) == user: Sender = str(c.user1)
+    else: Sender = str(c.user2)
+    m = Message(sender=Sender,body=Body,timestamp=datetime.datetime.utcnow(),conversation=c)
+    db.session.add(m)
+    try:
+        db.session.commit()
+    except Exception as e:
+            db.session.rollback()
+            return "brokenm"
+    return redirect('settings/'+Sender)
+        
+
+@app.route("/start",methods=["GET","POST"])
+@login_required
+def start():
+    Sender = request.form["user"];
+    Receiver = request.form["to"]
+    if User.query.filter_by(username=Receiver).first() == None: return "Invalid User!"
+    Subject = request.form["subject"]
+    body = request.form["body"]
+    c =  Conversation(subject=Subject,user1=Sender,user2=Receiver,timestamp=datetime.datetime.utcnow())
+    db.session.add(c)
+    try :
+        db.session.commit()
+        m  = Message(sender=Sender,body=body,timestamp=datetime.datetime.utcnow(),conversation=c)
+        db.session.add(m)
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            return "brokenm"         
+    except Exception as e:
+        db.session.rollback()
+        return "brokenc" 
+    
+    return redirect('/settings/'+Sender)
+
+
+
+@app.route("/converse/<username>",methods=["GET"])
+@login_required
+def converse(username):
+    return render_template("compose.html",username=username)
+
 
 if __name__ == "__main__":
     db.session.rollback()

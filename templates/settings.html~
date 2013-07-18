@@ -1,0 +1,15 @@
+<html>
+<head>
+  <title>Account</title>
+</head>
+<body>
+  <h2>Welcome, {{username}}</h2>
+  <h5>My Skills</h5>
+  <ul>
+    {% for skill in s %}
+    <li>{{skill}}</li>
+    {% endfor %}
+  </ul>
+  <a href="/compose/{{username}}">New Message</a>
+</body>
+</html>

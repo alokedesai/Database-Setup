@@ -1,0 +1,13 @@
+<html>
+  <head>
+    <title>Reply</title>
+  </head>
+  <body>
+    <form action="{{ url_for('replying')}}" method=post>
+      <input type=text style="display:none;" value="{{user}}" name="user"></input>
+      <input type=text style="display:none;" value="{{ID}}" name="conversation"></input>
+      <input type=text style="width:500px;height=500px;" name="body"></input>
+      <input type=submit value="Send"></input>
+    </form>
+  </body>
+</html>

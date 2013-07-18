@@ -11,3 +11,4 @@ for s in skill:
     db.session.delete(s)
 db.session.commit()
 
+

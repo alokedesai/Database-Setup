@@ -5,6 +5,8 @@ from forms import LoginForm
 from flask.ext.openid import OpenID
 import os
 from flask.ext.login import login_user, logout_user, current_user, login_required, LoginManager
+import unicodedata
+
 
 app = Flask(__name__)
 app.secret_key = "some_"
@@ -14,13 +16,15 @@ db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
+
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True)
     email = db.Column(db.String(120), unique=True)
     password = db.Column(db.String(12), unique=False)
     messages = db.relationship('Message', backref = 'author', lazy = 'dynamic')
-    skills = db.relationship('Skill', backref = 'author', lazy = 'dynamic')
+    skills = db.relationship('Skills',backref='user',lazy='dynamic')
     
     def is_authenticated(self):
         return True
@@ -52,9 +56,9 @@ class Message(db.Model):
     def __repr__(self):
         return "<Message %r>" % self.body
     
-class Skill(db.Model):
+class Skills(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    skill = db.Column(db.String(80), unique=True)
+    skill = db.Column(db.String(80))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __repr__(self):
@@ -76,7 +80,7 @@ def results():
     error = None
     theUser = request.form["username"]
     email = request.form["email"]
-    skills = request.form.getlist('skills')
+    skill = request.form.getlist('skills')
     for users in User.query.all():
         if theUser == users.username:
             error = "already a username"
@@ -89,24 +93,24 @@ def results():
         db.session.add(x)
         try :
             db.session.commit()
-            auth = User.query.filter_by(username=theUser).first()
-            for s in skills:
-                y = Skill(skill = s, author = auth)
-                db.session.add(y)
-                try:
-                    db.session.commit()
-                except Exception as e:
-                    db.session.rollback()
-                    return "broken"
+            for s in skill:
+                S = Skills(skill=s,user=x)
+                db.session.add(S)
+            try:
+                db.session.commit()
+            except Exception as e:
+                db.session.rollback()
+                return "broken"
         except Exception as e:
             db.session.rollback()
+            return "broken"
             
         
     except IntegrityError:
         print "Not Working"
-
+    string = unicodedata.normalize('NFKD',x.username).encode('ascii','ignore')
    
-    return render_template("results.html", user=User.query.all(), error = error)
+    return string #render_template("results.html", user=User.query.all(), error = error)
 
 @app.route('/signin', methods = ["GET"])
 def signin():

@@ -23,6 +23,8 @@ def str(x):
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True)
+    name = db.Column(db.String(120), unique = False)
+    school = db.Column(db.String(120), unique = False)
     email = db.Column(db.String(120), unique=True)
     password = db.Column(db.String(12), unique=False)
     skills = db.relationship('Skills',backref='user',lazy='dynamic')
@@ -39,10 +41,12 @@ class User(db.Model):
         return unicode(self.id)
 
 
-    def __init__(self, username, email, password):
+    def __init__(self, username, email, password, name, school):
         self.username = username
         self.email = email
         self.password = password
+        self.name = name
+        self.school = school
 
     def __repr__(self):
         return "<User %r>" % self.username
@@ -86,6 +90,9 @@ def load_user(userid):
 def index():
     # return str(User.query.all()[0].password) # I don't think this will 
     
+    return render_template("index.html")
+@app.route("/signup")
+def signup():
     return render_template("new.html")
 
 @app.route("/results", methods=["POST"])
@@ -102,7 +109,7 @@ def results():
             error= "already a registered email"
 
     try:
-        x = User(theUser, email, request.form["password"])
+        x = User(theUser, email, request.form["password"], request.form["name"], request.form["school"])
         db.session.add(x)
         try :
             db.session.commit()
@@ -250,5 +257,4 @@ if __name__ == "__main__":
     #     print "worked"
     # except IntegrityError:
     #     print "Not Working"
-
-    app.run()
+    app.run(debug=True)

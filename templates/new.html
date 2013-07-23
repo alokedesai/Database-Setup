@@ -4,11 +4,11 @@
   <link rel="stylesheet" href="static/chosen.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type="text/javascript"></script>
   <script src="static/chosen.jquery.js" type="text/javascript"></script>
-  <link rel="stylesheet" type="text/css" href="static/styles.css">
 </head>
 <body>
   <div id="fb-root"></div>
 <script>
+  var e =jQuery.Event("fbload");
     function college(arg) {
       if (arg.length > 0) {
         for (var i = 0; i < arg.length; i++) {
@@ -31,7 +31,7 @@
       oauth      : true,
       xfbml      : true
     });
-    
+    jQuery("body").trigger(e);
   };
 
 
@@ -44,33 +44,34 @@
 
   
 
-    function fb(){
+   $(document).on(
+    "fbload",  //  <---- HERE'S OUR CUSTOM EVENT BEING LISTENED FOR
+    function(){
         //some code that requires the FB object
         //such as...
-         FB.login(function(response) {
-   if (response.authResponse) {
-     FB.api('/me', function(fbUser) {
-       $("#name").val(fbUser["name"]);
+        FB.getLoginStatus(function(res){
+            if( res.status == "connected" ){
+                FB.api('/me', function(fbUser) {
+                    // alert(college(fbUser["education"])  + " "  + fbUser["hometown"]["name"]);
+                    $("#name").val(fbUser["name"]);
                   if (college(fbUser["education"]) != "no") {
                     $("#school").val(college(fbUser["education"]));
                     $("#school").prop("readonly", true);
                   }
                   
                   $("#email").val(fbUser["email"]);
-       
-     });
-   } else {
-     console.log('User cancelled login or did not fully authorize.');
-   }
- }, {scope:'email,user_education_history'});;
-  }
 
 
-   
+                });
+            }
+        });
+
+    }
+);
 </script>
 
-<!-- <div class="fb-login-button" data-scope = "email, user_education_history" data-show-faces="true" data-width="200" data-max-rows="1">Start w/ Facebook</div> -->
-<div class="button btn-blue" onclick="fb()">Login with Facebook</div>
+
+<div class="fb-login-button" data-scope = "email, user_education_history" data-show-faces="true" data-width="200" data-max-rows="1">Start w/ Facebook</div>
   <h2>New Account</h2> 
   <form action="{{ url_for('results') }}" method=post>
     <p>

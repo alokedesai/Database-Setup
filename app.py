@@ -6,7 +6,7 @@ from flask.ext.openid import OpenID
 import os
 from flask.ext.login import login_user, logout_user, current_user, login_required, LoginManager
 import unicodedata
-import datetime
+import datetime, operator
 
 app = Flask(__name__)
 app.secret_key = "some_"
@@ -19,6 +19,19 @@ login_manager.init_app(app)
 def str(x):
     return unicodedata.normalize('NFKD',x).encode('ascii','ignore')
 
+def uniquifyo(xl):
+    final = []
+    ranked = {}
+    for x in xl:
+        if x in ranked:
+            ranked[x] += 1
+            continue
+        ranked[x] = 1
+    sorted_x = sorted(ranked.iteritems(), key=operator.itemgetter(1),reverse=True)
+    for y in sorted_x:
+        final.append(y[0])
+    return final
+        
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -212,6 +225,34 @@ def replying():
             return "brokenm"
     return redirect('settings/'+Sender)
         
+@app.route("/search",methods=["GET","POST"])
+def search():
+    schools = []
+    users = User.query.all()
+    for user in users:
+        if str(user.school) == "" : continue
+        schools.append(str(user.school))
+    schools = list(set(schools))
+    return render_template('search.html',schools=schools)
+
+@app.route("/sresults",methods=["GET","POST"])
+def sresults():
+    schools= request.form.getlist("schools")
+    skills = request.form.getlist('skills')
+    users = []
+    
+    for sch in schools:
+        users += User.query.filter_by(school=sch).all()
+    for sk in skills:
+        skillList = Skills.query.filter_by(skill=sk).all()
+        for s in skillList:
+            users.append(s.user)
+
+    users = uniquifyo(users)
+    names = []
+    for user in users:
+        names.append(str(user.username))
+    return render_template('sresults.html',names=names)
 
 @app.route("/start",methods=["GET","POST"])
 @login_required

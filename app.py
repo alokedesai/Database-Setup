@@ -45,6 +45,7 @@ class User(db.Model):
     major = db.Column(db.String(120), unique=False)
     role = db.Column(db.String(80), unique=False)
     skills = db.relationship('Skills',backref='user',lazy='dynamic')
+    experience  = db.relationship("Experience", backref='user',lazy='dynamic')
     
     
     def is_authenticated(self):
@@ -110,9 +111,16 @@ class Experience(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(80))
     company = db.Column(db.String(80))
-    start_date = db.Column(db.String(20))
-    end_date = db.Column(db.String(20))
+    description = db.Column(db.String(200))
+
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    def __init__(self, title, company, description, user):
+        self.title = title
+        self.company = company
+        self.description = description
+       
+        self.user = user
 
     def __repr__(self):
         return "<Experience %r>" % self.title
@@ -148,21 +156,25 @@ def collegesignup():
 
         
         c1 = request.form["company1"]
-        c2 = request.form["company2"]
-        c3 = request.form["company3"]
-
         t1 = request.form["title1"]
-        t2 = request.form["title2"]
-        t3 = request.form["title3"]
+        experience1 = request.form["expDescription1"]
+
+        # c2 = request.form["company2"]
+        # c3 = request.form["company3"]
+
+        
+        # t2 = request.form["title2"]
+        # t3 = request.form["title3"]
 
 
-        s1 = request.form["startdate1"]
-        s2 = request.form["startdate2"]
-        s3 = request.form["startdate3"]
+        # s1 = request.form["startdate1"]
+        
+        # s2 = request.form["startdate2"]
+        # s3 = request.form["startdate3"]
 
-        e1 = request.form["enddate1"]
-        e2 = request.form["enddate2"]
-        e3 = request.form["enddate3"]
+        # e1 = request.form["enddate1"]
+        # e2 = request.form["enddate2"]
+        # e3 = request.form["enddate3"]
 
       
         for users in User.query.all():
@@ -173,7 +185,7 @@ def collegesignup():
                 error= "already a registered email"
                 return render_template("new.html", error= error)
 
-        for item in [theUser, first_name, last_name, email, school, year, major, password, c1, t1,s1,e1]:
+        for item in [theUser, first_name, last_name, email, school, year, major, password, c1, t1]:
             if item == None or item == "":
                 return render_template("new.html", error = "You failed to fill in a required field" + str(item))
         try:
@@ -190,13 +202,15 @@ def collegesignup():
 
                     # for i in range(1,4):
                     #     if t[i] != "":
-                    #         E = Experience(title = t[i], company = c[i], start = s[i], end = e[i], user=x)
+                    #         E = Experience(t[i], c[i], s[i], e[i], x)
                     #         db.session.add(E)
-                    # try:
-                    #     db.session.commit()
-                    # except:
-                    #     db.session.rollback()
-                    #     return "couldn't commit experience"
+                    E = Experience(t1, c1, experience1, x)
+                    db.session.add(E)
+                    try:
+                        db.session.commit()
+                    except:
+                        db.session.rollback()
+                        return "couldn't commit experience"
                 except Exception as e:
                     db.session.rollback()
                     return "couldn't commit skills or experience"
@@ -424,12 +438,17 @@ def profile(username):
         cS = []
         cR = []
         s = []
+        exp = []
         user = User.query.filter_by(username=username).first()
         skill = user.skills.all()
-       
+        experience = user.experience.all()
         for SKILLS in skill:
             s.append(unicodedata.normalize('NFKD',SKILLS.skill).encode('ascii','ignore'))
-        return render_template("profile.html",user = user, username=username,s=s)
+        for exper in experience:
+            exp.append({"title" : exper.title.encode("utf-8"), "company" : exper.company.encode("utf-8"), "company" : exper.company.encode("utf-8")})
+
+
+        return render_template("profile.html",user = user, username=username,s=s, experience = exp)
     else:
         return "not setup yet"
 

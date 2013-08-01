@@ -28,6 +28,12 @@
     {% endfor %}
   </ul>
   <a href="/converse/{{username}}">New Conversation</a>
+  <h4>My Files</h4>
+  <ul>
+    {% for f in files %}
+    <li><a href="/uploads/{{f}}">{{f}}</a></li>
+    {% endfor %}
+  </ul>
   <h4> Upload Resume </h4>
   <p> Extensions supported: .pdf, .txt, .doc, .odt </p>  
   <form action="" method=post enctype=multipart/form-data>

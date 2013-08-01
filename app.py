@@ -60,6 +60,7 @@ class User(db.Model):
     role = db.Column(db.String(80), unique=False)
     skills = db.relationship('Skills',backref='user',lazy='dynamic')
     experience  = db.relationship("Experience", backref='user',lazy='dynamic')
+    files = db.relationship('File',backref='user',lazy='dynamic')
     
     
     def is_authenticated(self):
@@ -92,6 +93,14 @@ class User(db.Model):
     def __repr__(self):
         return "<User %r>" % self.username
 
+class File(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(db.String(80))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    def __repr__(self):
+        return "<File %r>" % self.filename
+    
 class Conversation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     subject = db.Column(db.String(80))
@@ -328,11 +337,14 @@ def logout():
 def settings(username):
     if request.method=='POST':
         file = request.files['file']
+        u = User.query.filter_by(username=username).first()
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return redirect(url_for('uploaded_file',
-                                    filename=filename))        
+            f = File(filename=file.filename,user=u)
+            db.session.add(f)
+            db.session.commit()
+            return redirect("/settings/"+username)        
     if loggedUser == None:
         return redirect("/signin")
     if username == loggedUser.username.encode("utf-8"):
@@ -341,6 +353,7 @@ def settings(username):
             cR = []
             s = []
             exp =[]
+            f=[]
             user = User.query.filter_by(username=username).first()
             email = user.email.encode("utf-8").lower()
             size = 150
@@ -349,8 +362,9 @@ def settings(username):
             gravatar_url = "http://www.gravatar.com/avatar/" + hashlib.md5(email.lower()).hexdigest()
             gravatar_url += urllib.urlencode({'d':default, 's':str(size)})
 
-
+            
             skill = user.skills.all()
+            files = user.files.all()
             conversationsS = Conversation.query.filter_by(user1=unicodedata.normalize('NFKD',user.username).encode('ascii','ignore')).all()
             conversationsR = Conversation.query.filter_by(user2=unicodedata.normalize('NFKD',user.username).encode('ascii','ignore')).all()
             experience = user.experience.all()
@@ -360,9 +374,11 @@ def settings(username):
                 cR.append({'user': uni(c.user1), 'subject': uni(c.subject), 'timestamp': c.timestamp, 'id': c.id})
             for SKILLS in skill:
                 s.append(unicodedata.normalize('NFKD',SKILLS.skill).encode('ascii','ignore'))
+            for fil in files:
+                f.append(fil.filename.encode("utf-8"))
             for exper in experience:
                 exp.append({"title" : exper.title.encode("utf-8"), "company" : exper.company.encode("utf-8"), "description" : exper.description.encode("utf-8")})
-            return render_template("settings.html",username=username,s=s,cS=cS,cR=cR, experience = exp, profpic = gravatar_url)
+            return render_template("settings.html",username=username,s=s,cS=cS,cR=cR, experience = exp, profpic = gravatar_url, files = f)
         else:
             cS = []
             cR = []

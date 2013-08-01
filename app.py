@@ -138,10 +138,14 @@ def index():
 
 @app.route("/signup")
 def signup():
+    if loggedUser:
+        return redirect("/")
     return render_template("signup.html")
 
 @app.route("/signup/college",  methods=["POST", "GET"])
 def collegesignup():
+    if loggedUser:
+        return redirect("/")
     if request.method == "POST":
         error = None
         theUser = request.form["username"].lower()
@@ -228,46 +232,13 @@ def collegesignup():
 
     return render_template("new.html")
 
-# @app.route("/results", methods=["POST"])
-# def results():
-#     error = None
-#     theUser = request.form["username"].lower()
-#     email = request.form["email"].lower()
-#     skill = request.form.getlist('skills')
-#     for users in User.query.all():
-#         if theUser == users.username:
-#             error = "already a username"
-
-#         if email == users.email:
-#             error= "already a registered email"
-
-#     try:
-#         x = User(theUser, email, request.form["password"].lower(), request.form["name"], request.form["school"], request.form["type"])
-#         db.session.add(x)
-#         try :
-#             db.session.commit()
-#             for s in skill:
-#                 S = Skills(skill=s,user=x)
-#                 db.session.add(S)
-#             try:
-#                 db.session.commit()
-#             except Exception as e:
-#                 db.session.rollback()
-#                 return "broken"
-#         except Exception as e:
-#             db.session.rollback()
-#             return "broken"
-            
-        
-#     except IntegrityError:
-#         print "Not Working"
-#     string = unicodedata.normalize('NFKD',x.username).encode('ascii','ignore')
-   
-#     return string #render_template("results.html", user=User.query.all(), error = error)
 
 @app.route('/signin', methods = ["GET", "POST"])
 def signin():
+    if loggedUser:
+            return redirect('/settings/'+ loggedUser.username.encode("utf-8"))
     if request.method == "POST":
+
         error = None
         form = LoginForm()
         theUser = request.form["username"].lower()

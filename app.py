@@ -1,4 +1,4 @@
-from flask import Flask, flash, render_template, session, url_for, request, redirect, g
+from flask import Flask, flash, render_template, session, url_for, request, redirect, g, send_from_directory
 from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
 from forms import LoginForm
@@ -8,10 +8,17 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 import unicodedata
 import urllib, hashlib
 import datetime, operator
+from werkzeug import secure_filename
 
+UPLOAD_FOLDER='/static/'
+ALLOWED_EXTENSIONS=set(['txt','pdf','doc','odt'])
 app = Flask(__name__)
 app.secret_key = "some_"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///app.db"
+
+app.config['DEFAULT_FILE_STORAGE'] = 'filesystem'
+app.config['UPLOAD_FOLDER'] = os.path.realpath('.') + UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 db = SQLAlchemy(app)
 login_manager = LoginManager()
@@ -20,6 +27,11 @@ loggedUser =  None
 curID = None
 def uni(x):
     return unicodedata.normalize('NFKD',x).encode('ascii','ignore')
+
+def allowed_file(filename):
+    return '.' in filename and \
+        filename.rsplit('.',1)[1] in ALLOWED_EXTENSIONS
+
 
 def uniquifyo(xl):
     final = []
@@ -33,6 +45,7 @@ def uniquifyo(xl):
     for y in sorted_x:
         final.append(y[0])
     return final
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True)
@@ -264,7 +277,6 @@ def collegesignup():
 #     string = unicodedata.normalize('NFKD',x.username).encode('ascii','ignore')
    
 #     return string #render_template("results.html", user=User.query.all(), error = error)
-
 @app.route('/signin', methods = ["GET", "POST"])
 def signin():
     if request.method == "POST":
@@ -303,9 +315,16 @@ def logout():
     loggedUser = None
     return redirect('/')
 
-@app.route("/settings/<username>")
+@app.route("/settings/<username>", methods=['GET', 'POST'])
 @login_required
 def settings(username):
+    if request.method=='POST':
+        file = request.files['file']
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            return redirect(url_for('uploaded_file',
+                                    filename=filename))        
     if loggedUser == None:
         return redirect("/signin")
     if username == loggedUser.username.encode("utf-8"):
@@ -419,6 +438,21 @@ def sresults():
         names.append(uni(user.username))
     return render_template('sresults.html',names=names)
 
+@app.route('/upload', methods=['GET', 'POST'])
+def upload_file():
+    if request.method=='POST':
+        file = request.files['file']
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            return redirect(url_for('uploaded_file',
+                                    filename=filename))
+    return render_template('upload.html')
+
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'],
+                               filename)
 
 @app.route("/start",methods=["GET","POST"])
 @login_required

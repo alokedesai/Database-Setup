@@ -12,3 +12,7 @@ for s in skill:
 db.session.commit()
 
 
+file = app.File.query.all()
+for f in file:
+    db.session.delete(f)
+db.session.commit()

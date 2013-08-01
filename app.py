@@ -6,7 +6,7 @@ from flask.ext.openid import OpenID
 import os
 from flask.ext.login import login_user, logout_user, current_user, login_required, LoginManager
 import unicodedata
-import datetime
+import datetime, operator
 
 app = Flask(__name__)
 app.secret_key = "some_"
@@ -383,7 +383,7 @@ def sresults():
         names.append(str(user.username))
     return render_template('sresults.html',names=names)
 
-    
+
 @app.route("/start",methods=["GET","POST"])
 @login_required
 def start():

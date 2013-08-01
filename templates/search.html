@@ -1,0 +1,39 @@
+<html>
+  <head>
+    <title>Search</title>
+    <link rel="stylesheet" href="static/chosen.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type="text/javascript"></script>
+    <script src="static/chosen.jquery.js" type="text/javascript"></script>
+    
+   
+  </head>
+  <body>
+    <form method=post action="{{ url_for('sresults') }}">
+      <select data-placeholder="Skills" name="skills" class="skills" multiple>
+	<option value></option>
+	<option>Java</option>
+	<option>JavaScript</option>
+	<option>C</option>
+	<option>C++</option>
+	<option>PHP</option>
+	<option>HTML</option>
+	<option>CSS</option>
+	<option>Ruby</option>
+	<option>Python</option>
+	<option>Objective C</option>
+      </select>
+      <select data-placeholder="Schools" name="schools" class="schools" multiple>
+	<option></option>
+	{% for school in schools %}
+	<option>{{school}}</option>	
+	{% endfor %}
+      </select>
+      <input type=submit class="search" value="Search">
+       <script type="text/javascript">
+	 $('.skills').chosen();
+	 $('.schools').chosen();
+       </script>
+    </form>
+  </body>
+
+</html>

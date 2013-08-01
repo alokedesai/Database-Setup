@@ -6,6 +6,7 @@ from flask.ext.openid import OpenID
 import os
 from flask.ext.login import login_user, logout_user, current_user, login_required, LoginManager
 import unicodedata
+import urllib, hashlib
 import datetime, operator
 
 app = Flask(__name__)
@@ -15,9 +16,9 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///app.db"
 db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
-
+loggedUser =  None
 curID = None
-def str(x):
+def uni(x):
     return unicodedata.normalize('NFKD',x).encode('ascii','ignore')
 
 def uniquifyo(xl):
@@ -133,7 +134,7 @@ def load_user(userid):
 def index():
     # return str(User.query.all()[0].password) # I don't think this will 
     
-    return render_template("index.html")
+    return render_template("index.html", logged = loggedUser)
 
 @app.route("/signup")
 def signup():
@@ -187,7 +188,7 @@ def collegesignup():
 
         for item in [theUser, first_name, last_name, email, school, year, major, password, c1, t1]:
             if item == None or item == "":
-                return render_template("new.html", error = "You failed to fill in a required field" + str(item))
+                return render_template("new.html", error = "You failed to fill in a required field" + uni(item))
         try:
             x = User(theUser, first_name, last_name, email, password,description, school, year, major, "developer")
             db.session.add(x)
@@ -278,6 +279,9 @@ def signin():
 
                 if password == users.password:
                     curID = users.id
+                    global loggedUser
+                    loggedUser = users
+
                     user = load_user(users.id)
                     login_user(user)
                     flash('Logged ' + theUser + ' in successfully.')
@@ -295,58 +299,76 @@ def signin():
 def logout():
     logout_user()
     flash('Logged out successfully.')
+    global loggedUser
+    loggedUser = None
     return redirect('/')
 
 @app.route("/settings/<username>")
 @login_required
 def settings(username):
-    if User.query.get(current_user.get_id()).role == "developer":
-        cS = []
-        cR = []
-        s = []
-        user = User.query.filter_by(username=username).first()
-        skill = user.skills.all()
-        conversationsS = Conversation.query.filter_by(user1=unicodedata.normalize('NFKD',user.username).encode('ascii','ignore')).all()
-        conversationsR = Conversation.query.filter_by(user2=unicodedata.normalize('NFKD',user.username).encode('ascii','ignore')).all()
-        for c in conversationsS:
-            cS.append({'user': str(c.user2), 'subject': str(c.subject), 'timestamp': c.timestamp, 'id': c.id})
-        for c in conversationsR:
-            cR.append({'user': str(c.user1), 'subject': str(c.subject), 'timestamp': c.timestamp, 'id': c.id})
-        for SKILLS in skill:
-            s.append(unicodedata.normalize('NFKD',SKILLS.skill).encode('ascii','ignore'))
-        return render_template("settings.html",username=username,s=s,cS=cS,cR=cR)
+    if loggedUser == None:
+        return redirect("/signin")
+    if username == loggedUser.username.encode("utf-8"):
+        if User.query.get(current_user.get_id()).role == "developer":
+            cS = []
+            cR = []
+            s = []
+            exp =[]
+            user = User.query.filter_by(username=username).first()
+            email = user.email.encode("utf-8").lower()
+            size = 150
+            default = "http://www.blackdogeducation.com/wp-content/uploads/facebook-default-photo.jpg"
+
+            gravatar_url = "http://www.gravatar.com/avatar/" + hashlib.md5(email.lower()).hexdigest()
+            gravatar_url += urllib.urlencode({'d':default, 's':str(size)})
+
+
+            skill = user.skills.all()
+            conversationsS = Conversation.query.filter_by(user1=unicodedata.normalize('NFKD',user.username).encode('ascii','ignore')).all()
+            conversationsR = Conversation.query.filter_by(user2=unicodedata.normalize('NFKD',user.username).encode('ascii','ignore')).all()
+            experience = user.experience.all()
+            for c in conversationsS:
+                cS.append({'user': uni(c.user2), 'subject': uni(c.subject), 'timestamp': c.timestamp, 'id': c.id})
+            for c in conversationsR:
+                cR.append({'user': uni(c.user1), 'subject': uni(c.subject), 'timestamp': c.timestamp, 'id': c.id})
+            for SKILLS in skill:
+                s.append(unicodedata.normalize('NFKD',SKILLS.skill).encode('ascii','ignore'))
+            for exper in experience:
+                exp.append({"title" : exper.title.encode("utf-8"), "company" : exper.company.encode("utf-8"), "description" : exper.description.encode("utf-8")})
+            return render_template("settings.html",username=username,s=s,cS=cS,cR=cR, experience = exp, profpic = gravatar_url)
+        else:
+            cS = []
+            cR = []
+            s = []
+            user = User.query.filter_by(username=username).first()
+
+            conversationsS = Conversation.query.filter_by(user1=unicodedata.normalize('NFKD',user.username).encode('ascii','ignore')).all()
+            conversationsR = Conversation.query.filter_by(user2=unicodedata.normalize('NFKD',user.username).encode('ascii','ignore')).all()
+            for c in conversationsS:
+                cS.append({'user': uni(c.user2), 'subject': uni(c.subject), 'timestamp': c.timestamp, 'id': c.id})
+            for c in conversationsR:
+                cR.append({'user': uni(c.user1), 'subject': uni(c.subject), 'timestamp': c.timestamp, 'id': c.id})
+            user = User.query.filter_by(username=username).first()
+
+            return render_template("company-settings.html",username=username,s=s,cS=cS,cR=cR)
     else:
-        cS = []
-        cR = []
-        s = []
-        user = User.query.filter_by(username=username).first()
-
-        conversationsS = Conversation.query.filter_by(user1=unicodedata.normalize('NFKD',user.username).encode('ascii','ignore')).all()
-        conversationsR = Conversation.query.filter_by(user2=unicodedata.normalize('NFKD',user.username).encode('ascii','ignore')).all()
-        for c in conversationsS:
-            cS.append({'user': str(c.user2), 'subject': str(c.subject), 'timestamp': c.timestamp, 'id': c.id})
-        for c in conversationsR:
-            cR.append({'user': str(c.user1), 'subject': str(c.subject), 'timestamp': c.timestamp, 'id': c.id})
-        user = User.query.filter_by(username=username).first()
-
-        return render_template("company-settings.html",username=username,s=s,cS=cS,cR=cR)
-
+        return "Can't acces this page"
 @app.route("/conversation/<ID>/<user>")
 @login_required
 def conversation(ID,user):
     c = Conversation.query.get(ID)
-    subject = str(c.subject)
+    subject = uni(c.subject)
     m=[]
     messages = c.messages.all()
     for M in messages:
-        m.append({'sender':str(M.sender),'body':str(M.body),'timestamp':M.timestamp})
+        m.append({'sender':uni(M.sender),'body':uni(M.body),'timestamp':M.timestamp})
     return render_template("conversation.html",m=m,user=user,subject=subject,ID=ID)
 
 @app.route("/reply/<ID>/<user>",methods=["GET"])
 @login_required
 def reply(ID,user):
     c = Conversation.query.get(ID)
-    subject = str(c.subject)
+    subject = uni(c.subject)
 
     return render_template("reply.html",ID=ID,user=user)
 
@@ -357,8 +379,8 @@ def replying():
     Body = request.form['body']
     user = request.form['user']
     c = Conversation.query.get(ID)
-    if str(c.user2) == user: Sender = str(c.user1)
-    else: Sender = str(c.user2)
+    if uni(c.user2) == user: Sender = uni(c.user1)
+    else: Sender = uni(c.user2)
     m = Message(sender=Sender,body=Body,timestamp=datetime.datetime.utcnow(),conversation=c)
     db.session.add(m)
     try:
@@ -373,8 +395,8 @@ def search():
     schools = []
     users = User.query.all()
     for user in users:
-        if str(user.school) == "" : continue
-        schools.append(str(user.school))
+        if uni(user.school) == "" : continue
+        schools.append(uni(user.school))
     schools = list(set(schools))
     return render_template('search.html',schools=schools)
 
@@ -394,7 +416,7 @@ def sresults():
     users = uniquifyo(users)
     names = []
     for user in users:
-        names.append(str(user.username))
+        names.append(uni(user.username))
     return render_template('sresults.html',names=names)
 
 

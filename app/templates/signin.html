@@ -1,0 +1,84 @@
+<html>
+  <head>
+
+    <title>Apployment | Login</title>
+  <link rel="stylesheet" type="text/css" href="static/styles.css">
+  <link href='http://fonts.googleapis.com/css?family=Roboto:100,300,700' rel='stylesheet' type='text/css'>
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type="text/javascript"></script>
+     <script src="http://stickyjs.com/jquery.sticky.js"></script>
+     <script src="static/jquery.validate.js"></script>
+
+  </head>
+  <body>
+
+     <div class="menu">
+                    <a style="outline: none;" href={{ url_for('index') }}><img src="static/newlogo.png" height="50" ></a>
+                    <ul id="nav">
+                    <li ><a >HOW IT WORKS</a></li>
+                    <li ><a >SEARCH</a></li>
+                    <li ><a href={{ url_for('signin') }}><div class="login">LOGIN</div></a></li>
+                    <li ><a href={{ url_for('signup') }}> <div class="signup">GET STARTED</div></a></li>
+                    </ul>
+        </div>
+    <div class="page" style="height: 100%;">
+    <br/>
+    {% if error %}
+    <div id="errorContainer" style="display:inherit;">
+    
+    
+    <ul>
+    <li>{{ error }}</li>
+  </ul>
+</div>
+    {% else %}
+    <div id="errorContainer">
+    
+       
+    <ul />
+</div>
+{% endif %}
+    <div style="text-align:center; padding-top: 30px;">
+    <form id="login" action = "" method=post >
+      
+      <input type=text name="username" class="form-login green" placeholder="Email"></input>
+      <br /> <br />
+      <input type=password name="password" class="form-login green"  placeholder="Password"></input> <br /> <br />
+
+      <input type=submit value="Sign in" class="signin-login green"></input>
+    </form>
+  </div>
+  </div>
+
+  <script>
+  $(document).ready(function () {
+
+    $('#login').validate({ // initialize the plugin
+        rules: {
+            username: {
+                required: true,
+                email: true
+                
+            },
+            password: {
+                required: true
+                
+            }
+        },
+       errorLabelContainer: "#messageBox",
+       errorClass: 'error',
+       messages: {
+        username: {
+         required: "Please enter your email address.",
+         email: "Please enter a valid email address."
+        },password: "Please enter your password."
+       },
+         errorContainer: $('#errorContainer'),
+    errorLabelContainer: $('#errorContainer ul'),
+    wrapper: 'li'
+    });
+
+});
+  </script>
+     
+  </body>
+</html>

@@ -1,0 +1,17 @@
+<html>
+  <head>
+    <title>Conversation with {{ user }} on {{ subject }} </title>
+  </head>
+  <body>
+    <h2>Conversation with {{ user }} on {{ subject }} </h2>
+    <ul>
+    {% for message in m %}
+    <li>
+      <p>{{message['sender']}} wrote on {{message['timestamp']}}</p>
+      <p>{{message['body']}}</p>
+    </li>
+    {% endfor %}
+    </ul>
+    <a href="/reply/{{ID}}/{{user}}">Reply</a>
+  </body>
+</html>

@@ -1,0 +1,19 @@
+<html>
+<head>
+  <title>Account</title>
+</head>
+<body>
+  <h2>Welcome, {{username}}</h2>
+ 
+  <h4>My Messages</h4>
+  <ul>
+    {% for conversation in cS %}
+    <a href="/conversation/{{conversation['id']}}/{{conversation['user']}}"><li>{{ conversation['user']  }} {{conversation['timestamp']}}  {{ conversation['subject'] }}</li></a>
+    {% endfor %}
+    {% for conversation in cR %}
+    <a href="/conversation/{{conversation['id']}}/{{conversation['user']}}"><li>{{ conversation['user']  }} {{conversation['timestamp']}}  {{ conversation['subject'] }}</li></a>
+    {% endfor %}
+  </ul>
+  <a href="/converse/{{username}}">New Conversation</a>
+</body>
+</html>

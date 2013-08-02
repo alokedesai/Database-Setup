@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<head>
+	<title>Apployment | Connecting Companies to College Developers </title>
+	<link rel="stylesheet" type="text/css" href="static/styles.css">
+	<link href='http://fonts.googleapis.com/css?family=Roboto:100,300,700' rel='stylesheet' type='text/css'>
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type="text/javascript"></script>
+     <script src="http://stickyjs.com/jquery.sticky.js"></script>
+
+
+</head>
+<body>
+	    <div class="menu">
+                    <a style="outline:none;" href={{ url_for('index') }}><img src="static/newlogo.png" height="50" ></a>
+                    <ul id="nav">
+                    <li ><a >HOW IT WORKS</a></li>
+                    <li ><a >SEARCH</a></li>
+                    <li >
+                      {% if not logged %}
+                      <a href={{ url_for('signin') }}><div class="login">LOGIN</div></a>
+                      {% else %}
+                      <a href={{ url_for('logout') }}><div class="login">LOGOUT</div></a>
+                      {% endif %}
+                    </li>
+                    <li >
+                      {% if not logged %}
+                      <a href={{ url_for('signup') }}> <div class="signup">GET STARTED</div></a>
+                      {% else %}
+                       <a href={{ url_for('settings', username = (curUsername)) }}> <div class="signup">MY PROFILE</div></a>
+                       {% endif %}
+                    </li>
+                    </ul>
+          </div>
+          <div class="page">
+               <div class = "piccontainer">
+                    <img src="static/clipboard-text.png" height = "200">
+                    <img src="static/mail-text.png" height = "200">
+                    <img src="static/verify-text.png" height = "200">
+
+               </div>
+               <div class="textcontainer">
+               </div>
+               
+                    
+          </div>
+
+          <div class="interest">
+               <p style="text-align: center; font-weight: 100; font-size: 40px; color: #3969AB;">Still interested?</p>
+               <div class="button btn-blue" style="margin-right:20px">Search for Developers</div>
+               <div class="button btn-blue" style="margin-left: 20px;">Search for Designers</div>
+          </div>
+          <script>
+  $(document).ready(function(){
+    $(".menu").sticky({topSpacing: 0 });
+  });
+</script>
+</body>
+</html>

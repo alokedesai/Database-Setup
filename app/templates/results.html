@@ -1,0 +1,14 @@
+<html>
+<head>
+	<title>Test</title>
+</head>
+<body>
+	{% if error %}
+    <p class=error><strong>Error:</strong> {{ error }}
+  {% endif %}
+	{% for x in user %}
+	{{x.password}}
+	{% endfor %}
+
+</body>
+</html>

@@ -1,0 +1,44 @@
+<html>
+<head>
+  <title>Account</title>
+</head>
+<body>
+  <h2>Welcome, {{username}}</h2>
+  <img src="{{profpic}}" />
+  <h4>My Skills</h4>
+  
+  <ul>
+    {% for skill in s %}
+    <li>{{skill}}</li>
+    {% endfor %}
+  </ul>
+  <h4>Experience</h4>
+  <ul>
+    {% for e in experience %}
+    <li>{{e["title"]}} at {{e["company"]}} - {{e["description"]}}</li>
+    {% endfor %}
+  </ul>
+  <h4>My Messages</h4>
+  <ul>
+    {% for conversation in cS %}
+    <a href="/conversation/{{conversation['id']}}/{{conversation['user']}}"><li>{{ conversation['user']  }} {{conversation['timestamp']}}  {{ conversation['subject'] }}</li></a>
+    {% endfor %}
+    {% for conversation in cR %}
+    <a href="/conversation/{{conversation['id']}}/{{conversation['user']}}"><li>{{ conversation['user']  }} {{conversation['timestamp']}}  {{ conversation['subject'] }}</li></a>
+    {% endfor %}
+  </ul>
+  <a href="/converse/{{username}}">New Conversation</a>
+  <h4>My Files</h4>
+  <ul>
+    {% for f in files %}
+    <li><a href="/uploads/{{f}}">Resume</a></li>
+    {% endfor %}
+  </ul>
+  <h4> Upload Resume </h4>
+  <p> Extensions supported: .pdf, .txt, .doc, .odt </p>  
+  <form action="" method=post enctype=multipart/form-data>
+    <p><input type=file name=file>
+      <input type=submit value=Upload>
+  </form>
+</body>
+</html>

@@ -126,7 +126,7 @@
 <div class="button btn-newBlue" style="height: 30px; width: 400px" id="facebook" onclick="fb()">Login with Facebook to validate your school</div></div> 
 <div id="error">{{error}}</div>
   
-  <form action=""  method=post id="signup" style="margin-left: 150px">
+  <form action=""  method=post id="signup" style="margin-left: 150px" enctype=multipart/form-data>
       <h2>Bio</h2>
       <input  class="form-login grayoutline green" type="text" style="width: 198px;" id="name" name="firstName" placeholder="First Name">
       <input  class="form-login grayoutline green" type="text" style= "width: 198px;" id="lastname" name="lastName" placeholder="Last Name">
@@ -174,7 +174,7 @@
     <br /> <br/>
       
 </div>
-  <div class="page2" style="height: 300px;">
+  <div class="page2" style="height: 360px;">
     <h2>Experience</h2>
         <p><input class="form-login grayoutline green half" type=text  id="title1" name = "title1" placeholder="Job Title"></input>
 
@@ -196,12 +196,22 @@
 
             <input class="form-login grayoutline green half" style="font-family: 'roboto'; font-weight: 300; " type="date"  id="startdate3" name = "startdate3" placeholder="Start Date"></input> to 
 
-              <input class="form-login grayoutline green half" style="font-family: 'roboto'; font-weight: 300; " type="date"  id="enddate3" name = "enddate3" placeholder="End Date"></input> -->
+              <input class="form-login grayoutline green half" style="font-family: 'roboto'; font-weight: 300; " type="date"  id="enddate3" name = "enddate3" placeholder="End Date"></input> --> <br/>
+             <span class ="signin-login green" id="upload" style="line-height:50px; text-align:center; width: 200; padding: 15px;"> Upload Resume:</span> Allowed extensions are .pdf, .doc, and .txt <p> <div id="filename"></div> <p> <input style="display:none" class = "file" type=file name=file>
   </div>
       <div style="text-align:center; margin-top: 15px;">
-      <input class ="signin-login green"type=submit value="Create entry">
+      <input class ="signin-login green" type=submit value="Create entry">
     </div>
       <script type="text/javascript">
+$('#upload').click(function() {
+    $('.file').click();
+});
+$('input[type=file]').bind('change', function() {
+    var str = "";
+    str = $(this).val();    
+
+    $("#filename").text(str);
+}).change();
 
 	$('.skills').chosen();
 

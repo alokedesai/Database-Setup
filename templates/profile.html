@@ -1,0 +1,30 @@
+<html>
+<head>
+  <title>{{username}}'s profile</title>
+</head>
+<body>
+  <h2>{{username}}'s Profile</h2>
+ 
+<h4>Skills</h4>
+  <ul>
+    {% for skill in s %}
+    <li>{{skill}}</li>
+    {% endfor %}
+  </ul>
+<h4>Experience</h4>
+  <ul>
+    {% for e in experience %}
+    <li>{{e["title"]}} at {{e["company"]}} - {{e["description"]}}</li>
+    {% endfor %}
+  </ul>
+<h4>Info</h4>
+  <ul>
+    <li>{{user.school}}
+  </ul>
+  <ul>
+    <li>{{f}}
+  </ul>
+
+  <a href="/converse/{{username}}">Contact</a>
+</body>
+</html>

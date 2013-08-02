@@ -10,8 +10,8 @@ import urllib, hashlib
 import datetime, operator
 from werkzeug import secure_filename
 
-UPLOAD_FOLDER='/static/'
-ALLOWED_EXTENSIONS=set(['txt','pdf','doc','odt'])
+UPLOAD_FOLDER='/static'
+ALLOWED_EXTENSIONS=set(['txt','pdf','doc','odt', "docx"])
 app = Flask(__name__)
 app.secret_key = "some_"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///app.db"
@@ -155,8 +155,10 @@ def load_user(userid):
 @app.route("/")
 def index():
     # return str(User.query.all()[0].password) # I don't think this will 
-    
-    return render_template("index.html", logged = loggedUser)
+    curUsername = None
+    if loggedUser:
+        curUsername = loggedUser.username.encode("utf-8")
+    return render_template("index.html", logged = loggedUser, curUsername = curUsername)
 
 @app.route("/signup")
 def signup():
@@ -227,14 +229,18 @@ def collegesignup():
                 try:
                     db.session.commit()
 
-                    # for i in range(1,4):
-                    #     if t[i] != "":
-                    #         E = Experience(t[i], c[i], s[i], e[i], x)
-                    #         db.session.add(E)
                     E = Experience(t1, c1, experience1, x)
                     db.session.add(E)
                     try:
                         db.session.commit()
+
+                        file = request.files['file']
+                        if file and allowed_file(file.filename):
+                            filename = secure_filename(str(x.id) + file.filename[file.filename.rfind("."):])
+                            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                            f = File(filename=filename,user=x)
+                            db.session.add(f)
+                            db.session.commit()
                     except:
                         db.session.rollback()
                         return "couldn't commit experience"
@@ -254,42 +260,6 @@ def collegesignup():
     return render_template("new.html")
 
 
-# @app.route("/results", methods=["POST"])
-# def results():
-#     error = None
-#     theUser = request.form["username"].lower()
-#     email = request.form["email"].lower()
-#     skill = request.form.getlist('skills')
-#     for users in User.query.all():
-#         if theUser == users.username:
-#             error = "already a username"
-
-#         if email == users.email:
-#             error= "already a registered email"
-
-#     try:
-#         x = User(theUser, email, request.form["password"].lower(), request.form["name"], request.form["school"], request.form["type"])
-#         db.session.add(x)
-#         try :
-#             db.session.commit()
-#             for s in skill:
-#                 S = Skills(skill=s,user=x)
-#                 db.session.add(S)
-#             try:
-#                 db.session.commit()
-#             except Exception as e:
-#                 db.session.rollback()
-#                 return "broken"
-#         except Exception as e:
-#             db.session.rollback()
-#             return "broken"
-            
-        
-#     except IntegrityError:
-#         print "Not Working"
-#     string = unicodedata.normalize('NFKD',x.username).encode('ascii','ignore')
-   
-#     return string #render_template("results.html", user=User.query.all(), error = error)
 
 @app.route('/signin', methods = ["GET", "POST"])
 def signin():
@@ -339,9 +309,9 @@ def settings(username):
         file = request.files['file']
         u = User.query.filter_by(username=username).first()
         if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
+            filename = secure_filename(str(loggedUser.id) + file.filename[file.filename.rfind("."):])
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            f = File(filename=file.filename,user=u)
+            f = File(filename=filename,user=u)
             db.session.add(f)
             db.session.commit()
             return redirect("/settings/"+username)        
@@ -360,7 +330,7 @@ def settings(username):
             default = "http://www.blackdogeducation.com/wp-content/uploads/facebook-default-photo.jpg"
 
             gravatar_url = "http://www.gravatar.com/avatar/" + hashlib.md5(email.lower()).hexdigest()
-            gravatar_url += urllib.urlencode({'d':default, 's':str(size)})
+            gravatar_url += urllib.urlencode({'default':default, 's':str(size)})
 
             
             skill = user.skills.all()
@@ -395,7 +365,7 @@ def settings(username):
 
             return render_template("company-settings.html",username=username,s=s,cS=cS,cR=cR)
     else:
-        return "Can't acces this page"
+        return redirect("/")
 @app.route("/conversation/<ID>/<user>")
 @login_required
 def conversation(ID,user):
@@ -467,7 +437,7 @@ def upload_file():
     if request.method=='POST':
         file = request.files['file']
         if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
+            filename = secure_filename(loggedUser.email.encode("utf-8") + file.filename[file.filename.rfind("."):])
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             return redirect(url_for('uploaded_file',
                                     filename=filename))
@@ -522,13 +492,15 @@ def profile(username):
         user = User.query.filter_by(username=username).first()
         skill = user.skills.all()
         experience = user.experience.all()
+        files = user.files.all()[0]
+        files = files.filename.encode("utf-8")
         for SKILLS in skill:
             s.append(unicodedata.normalize('NFKD',SKILLS.skill).encode('ascii','ignore'))
         for exper in experience:
             exp.append({"title" : exper.title.encode("utf-8"), "company" : exper.company.encode("utf-8"), "company" : exper.company.encode("utf-8")})
 
 
-        return render_template("profile.html",user = user, username=username,s=s, experience = exp)
+        return render_template("profile.html",user = user, username=username,s=s, experience = exp, f =files)
     else:
         return "not setup yet"
 

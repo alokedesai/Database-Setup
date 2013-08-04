@@ -31,7 +31,7 @@
   <h4>My Files</h4>
   <ul>
     {% for f in files %}
-    <li><a href="/uploads/{{f}}">Resume</a></li>
+    <li><a href="/uploads/{{f}}">Resume</a><span id="remove"> - <a href="/delete/{{f}}">  Delete<a></span></li> 
     {% endfor %}
   </ul>
   <h4> Upload Resume </h4>

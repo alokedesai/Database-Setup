@@ -323,6 +323,13 @@ def upload_file():
             return redirect(url_for('uploaded_file',
                                     filename=filename))
     return render_template('upload.html')
+@app.route('/delete/<fname>')
+def delete_file(fname):
+    f = File.query.filter_by(filename=fname).first()
+    
+    db.session.delete(f)
+    db.session.commit()
+    return redirect('/settings/'+loggedUser.username.encode("utf-8"))
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):

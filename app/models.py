@@ -37,8 +37,8 @@ class User(db.Model):
         self.password = password
         self.school = school
         self.role = role
-        self.first = first_name
-        self.last = last_name
+        self.first_name = first_name
+        self.last_name = last_name
         self.password_description = password_description
         self.grad_year = grad_year
         self.major = major

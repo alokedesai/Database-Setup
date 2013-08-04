@@ -8,6 +8,7 @@ from config import ALLOWED_EXTENSIONS
 from werkzeug import secure_filename
 import os
 import datetime, operator
+import unicodedata
 
 def uni(x):
     return x.encode('utf-8')
@@ -183,6 +184,11 @@ def logout():
     loggedUser = None
     return redirect('/')
 
+
+
+
+
+
 @app.route("/settings/<username>", methods=['GET', 'POST'])
 @login_required
 def settings(username):
@@ -207,29 +213,37 @@ def settings(username):
             f=[]
             user = User.query.filter_by(username=username).first()
             email = user.email.encode("utf-8").lower()
-            size = 150
+            school = uni(loggedUser.school)
+            major = uni(loggedUser.major)
+            size = 200
             default = "http://www.blackdogeducation.com/wp-content/uploads/facebook-default-photo.jpg"
 
             gravatar_url = "http://www.gravatar.com/avatar/" + hashlib.md5(email.lower()).hexdigest()
-            gravatar_url += urllib.urlencode({'default':default, 's':str(size)})
+            # gravatar_url += urllib.urlencode({'default':default, 's':str(size)})
+            gravatar_url += "?" + "s=" + str(size) +"&" + "d=" + "mm"
+            
 
             
             skill = user.skills.all()
             files = user.files.all()
-            conversationsS = Conversation.query.filter_by(user1=user.username.encode('utf-8'))
-            conversationsR = Conversation.query.filter_by(user2=user.username.encode('utf-8'))
+            conversationsS = Conversation.query.filter_by(user1=unicodedata.normalize('NFKD',user.username).encode('ascii','ignore')).all()
+            conversationsR = Conversation.query.filter_by(user2=unicodedata.normalize('NFKD',user.username).encode('ascii','ignore')).all()
             experience = user.experience.all()
             for c in conversationsS:
                 cS.append({'user': uni(c.user2), 'subject': uni(c.subject), 'timestamp': c.timestamp, 'id': c.id})
             for c in conversationsR:
                 cR.append({'user': uni(c.user1), 'subject': uni(c.subject), 'timestamp': c.timestamp, 'id': c.id})
             for SKILLS in skill:
-                s.append(SKILLS.skill.encode('utf-8'))
+                s.append(uni(SKILLS.skill))
             for fil in files:
                 f.append(fil.filename.encode("utf-8"))
+            if len(f) == 0:
+                files = None
+            else:
+                files = f[0] 
             for exper in experience:
                 exp.append({"title" : exper.title.encode("utf-8"), "company" : exper.company.encode("utf-8"), "description" : exper.description.encode("utf-8")})
-            return render_template("settings.html",username=username,s=s,cS=cS,cR=cR, experience = exp, profpic = gravatar_url, files = f)
+            return render_template("settings.html",username=username,s=s,cS=cS,cR=cR, experience = exp, profpic = gravatar_url, files = files, logged = loggedUser, year = uni(loggedUser.grad_year), major = major, school = school, first = loggedUser.first_name.encode("utf-8"), last = loggedUser.last_name.encode("utf-8"))
         else:
             cS = []
             cR = []
@@ -323,13 +337,6 @@ def upload_file():
             return redirect(url_for('uploaded_file',
                                     filename=filename))
     return render_template('upload.html')
-@app.route('/delete/<fname>')
-def delete_file(fname):
-    f = File.query.filter_by(filename=fname).first()
-    
-    db.session.delete(f)
-    db.session.commit()
-    return redirect('/settings/'+loggedUser.username.encode("utf-8"))
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):

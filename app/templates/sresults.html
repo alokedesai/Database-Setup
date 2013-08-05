@@ -36,9 +36,11 @@
           
       <div style="margin-left: 35%;">
       {% for user in names %}
-      
+      <div style="margin-top : 50px;">
+       
       <div class="circular small" style="background: url({{ user["image"] }})"> </div>
-      <div style="margin-top:-80px; margin-left: 200px;">
+       <div style="margin-left: 30%">
+      <div style="margin-top:-80px; margin-left: 200px;"></div>
       <div style="font-size: 20px; font-weight:700">{{user["name"]}}</div>
       <div style="font-size: 14px;">{{user["school"]}}</div>
       <div style="font-size: 14px;"> {% for i in user["skills"] %}
@@ -52,7 +54,9 @@
 
       </div>
     </div>
+    </div> 
       {% endfor %}
       </div>
+
   </body>
 </html>

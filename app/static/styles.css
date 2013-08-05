@@ -451,3 +451,12 @@ background-color: #16A085;
   transition: 0.35s;
 
 }
+.small {
+	width: 80px;
+	height: 80px;
+	border-radius: 80px;
+	-webkit-border-radius: 80px;
+	-moz-border-radius: 80px;
+	background: url(http://link-to-your/image.jpg) no-repeat;
+	
+	}

@@ -324,7 +324,19 @@ def sresults():
     users = uniquifyo(users)
     names = []
     for user in users:
-        names.append(uni(user.username))
+        size = 80
+        default = "http://www.blackdogeducation.com/wp-content/uploads/facebook-default-photo.jpg"
+
+        gravatar_url = "http://www.gravatar.com/avatar/" + hashlib.md5(uni(user.email).lower()).hexdigest()
+            # gravatar_url += urllib.urlencode({'default':default, 's':str(size)})
+        gravatar_url += "?" + "s=" + str(size) +"&" + "d=" + "mm"
+        skills = user.skills.all()
+        if skills >= 5:
+            skills = skills[:3]
+        skill = []
+        for i in skills:
+            skill.append(uni(i.skill))
+        names.append({"username" : uni(user.username) , "name" : uni(user.first_name) + " " + uni(user.last_name), "school" : uni(user.school), "image" : gravatar_url, "skills" : skill})
     return render_template('sresults.html',names=names)
 
 @app.route('/upload', methods=['GET', 'POST'])

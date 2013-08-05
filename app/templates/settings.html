@@ -41,7 +41,7 @@
         </div> </br>
   
  
-  <div style="width:50%; float:left; padding-left: 20px; padding-right: 35px;">
+  <div style="width:50%; right: 20%; float:left; padding-left: 20px; padding-right: 35px;">
     <h2>Experience</h2>
     {% for e in experience %}
     <div style="font-weight: 700; font-size: 18px;"> 
@@ -52,7 +52,7 @@
     </div>
     <div style="font-weight:100; padding-top: 5px;">
       <!-- {{e["description"]}} -->
-      I created product, helped people implement Google Analytics, created sites, etc.
+      {{e["description"]}}
     </div>
     {% endfor %}
   </div>

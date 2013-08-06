@@ -243,7 +243,7 @@ def settings(username):
                 files = f[0] 
             for exper in experience:
                 exp.append({"title" : exper.title.encode("utf-8"), "company" : exper.company.encode("utf-8"), "description" : exper.description.encode("utf-8")})
-            return render_template("settings.html",username=username,s=s,cS=cS,cR=cR, experience = exp, profpic = gravatar_url, files = files, logged = loggedUser, year = uni(loggedUser.grad_year), major = major, school = school, first = loggedUser.first_name.encode("utf-8"), last = loggedUser.last_name.encode("utf-8"))
+            return render_template("settings.html",username=username,s=s,cS=cS,cR=cR, experience = exp, profpic = gravatar_url, files = files, logged = loggedUser, year = uni(loggedUser.grad_year), major = major, school = school, first = loggedUser.first_name.encode("utf-8"), last = loggedUser.last_name.encode("utf-8"), curUsername = username)
         else:
             cS = []
             cR = []

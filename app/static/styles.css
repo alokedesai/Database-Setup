@@ -82,6 +82,22 @@ h1{
 
 
  }
+ .mainimage {
+ 	width: 100% !important; 
+ 	min-width: 1000px;
+ 	height: 400px;
+ 	background: url("/static/images/splash2.png") no-repeat scroll center top transparent;
+ 	border-bottom: thin solid #D8D8D8;
+ 	background-size: 100%;
+ 	line-height: 400px;
+ 	font-size: 50px;
+ 	font-weight: 700;
+ 	color: #fff;
+ 	text-align: center;
+ 	overflow: scroll;
+
+
+ }
  
  .page2 {
  	width: 100% !important; 
@@ -430,6 +446,7 @@ background-color: #16A085;
 }
 #mail:focus {
 	background: white url("/static/images/mail-green.png") 98% no-repeat;
+	background-size: 17px;
 	-webkit-transition: 0.35s;
   -moz-transition: 0.35s;
   -o-transition: 0.35s;
@@ -443,6 +460,7 @@ background-color: #16A085;
 }
 #lock:focus {
 	background: white url("/static/images/lock-green.png") 98% no-repeat;
+	background-size: 17px;
 	-webkit-transition: 0.35s;
   -moz-transition: 0.35s;
   -o-transition: 0.35s;

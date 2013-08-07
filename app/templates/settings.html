@@ -9,7 +9,7 @@
      <link rel="stylesheet" type="text/css" href="/static/styles/colorbox.css">
      <script src="/static/scripts/jquery.colorbox-min.js"></script>
 </head>
-<body>
+<body style="background-color: #F1F2F2; ">
   <div class="menu">
                     <a style="outline:none;" href={{ url_for('index') }}><img src="/static/newlogo.png" height="50" ></a>
                     <ul id="nav">
@@ -31,51 +31,64 @@
                     </li>
                     </ul>
           </div>
-      <div class="page" style="height: 100%; max-width: 2000px;">
-        <div style="height: 200px; padding-left: 30px; margin-bottom: 0px;">
-          <div style="float:left; margin-left: 20%; background: url({{profpic}}); margin-top: 12px;" class="circular" >  </div>
-          <div style="margin-right: 20%; float: right; padding-bottom:0px; margin-bottom: 0px;"> <h1>{{first}} {{last}} </h1> </br>
-          <div style="margin-top: -50"><img style="padding-right: 15px;" src="/static/school.png" height="15"/>{{school}} </div>
-          <div><img style="padding-right: 10px;" src="/static/Hat.png" height="15"/>{{major}} </div>
-          <div><img style="padding-right: 13px;" src="/static/clock.jpeg" height="15"/>{{year}} </div>
+      <div class="page" style="height: 100%;border-bottom: none;">
+        <div style="float: left; position:relative; left: 20%;">
 
-        </div>
-        </div> </br>
-  
- 
-  <div style=" float:left;  margin-left: 20%; padding-left: 20px; padding-right: 35px;">
-    <h2>Experience</h2>
+         <div style="margin-left: 20%; background: url({{profpic}}); margin-top: 12px;" class="circular" >  </div>
+
+         <div style="left: 25%; position: relative;">
+          <h2>Experience</h2>
+          
     {% for e in experience %}
+    <div style="margin-top: 20px;">
     <div style="font-weight: 700; font-size: 18px;"> 
       {{e["title"]}}
     </div>
     <div style="padding-top: 2px;">
       {{e["company"]}}
     </div>
-    <div style="font-weight:100; padding-top: 5px;">
+    <div style="font-weight:100; padding-top: 5px; width: 250px; overflow: scroll;">
       <!-- {{e["description"]}} -->
-      {{e["description"]}}
+      {{e["description"]}} 
+
     </div>
+  </div>
+
+
     {% endfor %}
   </div>
-  <div>
-  <div style="width:400px; float:right; margin-right: 13%; padding-left: 0px;">
-   
-  <h2 style="text-align:center;">Skills</h2>
-  
+
+       </div>
+        <div style="position:relative; left: 50%; padding-top: 15px;">
+            <div class="profileInfo" style="padding-bottom: 15px;"><h1> {{first}} {{last}} </h1></div>
+            <div style="margin-top: -50"><img style="padding-right: 15px;" src="/static/school.png" height="15"/>{{school}} </div>
+          <div><img style="padding-right: 10px;" src="/static/Hat.png" height="15"/>{{major}} </div>
+          <div><img style="padding-right: 13px;" src="/static/clock.jpeg" height="15"/>{{year}} </div>
+
+          <div style="margin-top: 75px; position: relative;">
+            <h2 style="left: 60px; position: relative;">Skills</h2>
+          <div class="skills" style="right: 150px; height: 300px; overflow-y: scroll; width:500px; text-align:center; position: relative;">
+        
 
     {% for skill in s %}
     <span class="skill" >{{skill}}</span>
    
     {% endfor %}
-    
-    {% if files %}
+        </div>
+      </div>
 
-    <a style="text-decoration:none;" href="/uploads/{{files}}"><div class ="signin-login green" id="link" style="line-height:50px; text-align:center; width: 200; margin-left: 30%; text-decoration: none;"> View Resume</div></a> 
+       <div style="padding-top:30px; position: relative;" >
+          {% if files %}
+
+    <a style="text-decoration:none;" href="/uploads/{{files}}"><div class ="signin-login green" id="link" style="line-height:50px; text-align:center; width: 200;text-decoration: none; left: 250px; position:relative;"> View Resume</div></a> 
+    {% else %}
+      This user hasn't uploaded a resume.
     {% endif %}
+      </div>
+   
+
 </div>
-</div>
-<a class="test" href="index.html">test</a>
+
 </div>
 
 

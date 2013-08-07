@@ -157,8 +157,8 @@
         <div style="margin-left: 150px;">
           <h2 style="margin-left: -120px;">Skills</h2>
       <span id="sk">
-      <select data-placeholder="Skills" name="skills" style="width:350px;" class = "skills" multiple>
-	<option value></option>
+      <select data-placeholder="Skills" name="skills" style="width:350px;" class = "skills" id="skills" multiple>
+<!-- 	<option value></option>
 	<option>Java</option>
 	<option>JavaScript</option>
 	<option>C</option>
@@ -168,19 +168,41 @@
 	<option>CSS</option>
 	<option>Ruby</option>
 	<option>Python</option>
-	<option>Objective C</option>
+	<option>Objective C</option> -->
+
+  {%for x in options%}
+  <option>{{x}}</option>
+  {% endfor %}
       </select>
     </span> 
-    <br /> <br/>
-      
+    
+      <br /> <br/>
 </div>
-  <div class="page2" style="height: 360px;">
+  <div class="page2" style="height: auto;">
     <h2>Experience</h2>
+    <!-- Experience 1 -->
         <p><input class="form-login grayoutline green half" type=text  id="title1" name = "title1" placeholder="Job Title"></input>
 
           <input class="form-login grayoutline green half" type=text  id="company1" name = "company1" placeholder="Company"></input> <p>
 
            <textarea  name="expDescription1" class="form-area" style="height: 90px; width: 400px" rows="3" maxlength = "200" placeholder="Description of Job." cols="20"></textarea> 
+
+           <br/><br/>
+
+           <!-- Experience 2 -->
+           <p><input class="form-login grayoutline green half" type=text   name = "title2" placeholder="Job Title"></input>
+
+          <input class="form-login grayoutline green half" type=text  name = "company2" placeholder="Company"></input> <p>
+
+           <textarea  name="expDescription2" class="form-area" style="height: 90px; width: 400px" rows="3" maxlength = "200" placeholder="Description of Job." cols="20"></textarea> 
+
+           <br/><br/>
+          <!--  Experience 3 -->
+           <p><input class="form-login grayoutline green half" type=text  id="title1" name = "title3" placeholder="Job Title"></input>
+
+          <input class="form-login grayoutline green half" type=text  id="company1" name = "company3" placeholder="Company"></input> <p>
+
+           <textarea  name="expDescription3" class="form-area" style="height: 90px; width: 400px" rows="3" maxlength = "200" placeholder="Description of Job." cols="20"></textarea> 
 
                <!-- <p><input class="form-login grayoutline green half" type=text  id="title2" name = "title2" placeholder="Job Title"></input>
 

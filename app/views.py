@@ -139,7 +139,14 @@ def collegesignup():
         string = x.username.encode('utf-8')
        
         return redirect("/signin")
-    return render_template("new.html")
+    ins = open("t1.txt")
+    array = []
+    for line in ins:
+        x = line.replace("\n", "")
+        if x[0].isalpha():
+            x = x[0].upper() + x[1:]
+        array.append(x)
+    return render_template("new.html", options= array)
 
 
 
@@ -301,12 +308,20 @@ def replying():
 @app.route("/search",methods=["GET","POST"])
 def search():
     schools = []
+    skills = []
     users = User.query.all()
     for user in users:
         if uni(user.school) == "" : continue
         schools.append(uni(user.school))
+        for x in user.skills.all():
+            skills.append(uni(x.skill))
+    skills = list(set(skills))
     schools = list(set(schools))
-    return render_template('search.html',schools=schools)
+    curUsername = ""
+    if loggedUser:
+        curUsername = uni(loggedUser.username)
+    
+    return render_template('search.html',schools=schools, skills=  skills, logged = loggedUser, curUsername = curUsername)
 
 @app.route("/sresults",methods=["GET","POST"])
 def sresults():

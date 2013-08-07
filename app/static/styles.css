@@ -51,8 +51,9 @@ h1{
   
    font-size: 1.3em;
    padding: 0.8em;
+
    background: white;
-	height: 1.9em;  
+	height: 45px;  
 	width: 100%;
 	min-width: 800px; 
 	border-bottom: thin solid #D8D8D8;
@@ -79,14 +80,14 @@ h1{
  	height: 400px;
  	background-color: #F1F2F2;
  	border-bottom: thin solid #D8D8D8;
-
+ 
 
  }
  .mainimage {
  	width: 100% !important; 
  	min-width: 1000px;
- 	height: 400px;
- 	background: url("/static/images/splash2.png") no-repeat scroll center top transparent;
+ 	height: 500px;
+ 	background: url("/static/images/splash.png") no-repeat scroll center top transparent;
  	border-bottom: thin solid #D8D8D8;
  	background-size: 100%;
  	line-height: 400px;
@@ -124,9 +125,10 @@ h1{
   color: #fff;
  }
  .signup:hover  {
- 	height: 100%;
- 	line-height: 65px;
- 	margin-top: -22px;
+ 	height: 60px;
+ 	line-height: 60px;
+ 	margin-top: -18px;
+
  	border-radius: 0px;
 
  }
@@ -476,3 +478,6 @@ background-color: #16A085;
 	background: url(http://link-to-your/image.jpg) no-repeat;
 	
 	}
+.profileInfo{
+	width: 600px;
+}

@@ -37,17 +37,9 @@
       	<div style="text-align:center">
     <form method=post action="{{ url_for('sresults') }}">
       <span style="padding-right:7%; text-align:left;"><select data-placeholder="Skills" name="skills" style="width:350px;" class = "skills" multiple>
-  <option value></option>
-  <option>Java</option>
-  <option>JavaScript</option>
-  <option>C</option>
-  <option>C++</option>
-  <option>PHP</option>
-  <option>HTML</option>
-  <option>CSS</option>
-  <option>Ruby</option>
-  <option>Python</option>
-  <option>Objective C</option>
+    {% for x in skills%}
+      <option>{{x}}</option>
+      {% endfor %}
       </select> </span>
       
       <span><select data-placeholder="Schools"  name="schools" class="schools" style="width:350px;" multiple>
@@ -58,7 +50,7 @@
       </select></span>
   </br>
 </br>
-      <input type="image" src="/static/images/search-orange.png" height="100" class="search" value="Search">
+      <input type="image" src="/static/images/blue-search.png" height="100" class="search" value="Search">
        <script type="text/javascript">
 	 $('.skills').chosen();
 	 $('.schools').chosen();

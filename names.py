@@ -1,4 +1,4 @@
-from app import User, db, Skills
+from app import models 
 data = [
     {
       "name": "Austin Huang", 
@@ -9892,30 +9892,6 @@ data = [
         }
       ], 
       "id": "1324861660"
-    },
-    {
-      "name": "Aloke Desai", 
-      "education": [
-        {
-          "school": {
-            "id": "110497035645916", 
-            "name": "Indian Hill"
-          }, 
-          "type": "High School"
-        }, 
-        {
-          "school": {
-            "id": "25827817664", 
-            "name": "Pomona College"
-          }, 
-          "year": {
-            "id": "127342053975510", 
-            "name": "2016"
-          }, 
-          "type": "College"
-        }
-      ], 
-      "id": "1329020679"
     }, 
     {
       "name": "Jee Young Kim", 
@@ -14541,7 +14517,7 @@ for datum in data:
         if school["type"] == "College":
             college = school["school"]["name"]
         else : college = ""
-    u = User(datum["name"].replace(" ",""),datum["name"].replace(" ","")+"@apployment.com","password",datum["name"],college)
+    u = models.User(datum["name"].replace(" ",""),datum["name"].replace(" ","")+"@apployment.com","password",datum["name"],college)
     db.session.add(u)
 db.session.commit()
 

@@ -6,7 +6,7 @@
   font-size: 13px;
   zoom: 1;
   *display: inline;
-
+  background-color: #fff;
 }
 .chzn-container .chzn-drop {
   position: absolute;
@@ -16,7 +16,7 @@
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  width: 100%;
+  width: 400px;
 /*  border: 1px solid #aaa;
 */  border-top: 0;
   background: #fff;
@@ -132,6 +132,7 @@
 .chzn-container-multi .chzn-choices {
   position: relative;
   overflow: hidden;
+  background-color: #fff;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;

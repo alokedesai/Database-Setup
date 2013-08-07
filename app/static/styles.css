@@ -1,11 +1,16 @@
 body {
 	font-family: "Roboto", sans-serif;
-	margin: 0;
-	padding: 0;
+	margin: 0px;
+	padding: 0px;
+	overflow-x: hidden;
 }
 h2{
 	font-weight: 300;
 	font-size: 30px;
+}
+h1{
+	font-weight: 300;
+	font-size: 50px;
 }
 #nav {
         float: right;
@@ -35,6 +40,7 @@ h2{
 		
 		padding-right: 0px;
 }
+
 #nav li a:hover{
 		color: #9BC4E2;
 		}
@@ -47,8 +53,9 @@ h2{
   
    font-size: 1.3em;
    padding: 0.8em;
+
    background: white;
-	height: 1.9em;  
+	height: 45px;  
 	width: 100%;
 	min-width: 800px; 
 	border-bottom: thin solid #D8D8D8;
@@ -71,15 +78,33 @@ h2{
  
  .page {
  	width: 100% !important; 
- 	min-width: 800px;
+ 	min-width: 1000px;
  	height: 400px;
  	background-color: #F1F2F2;
  	border-bottom: thin solid #D8D8D8;
+ 
 
  }
+ .mainimage {
+ 	width: 100% !important; 
+ 	min-width: 1000px;
+ 	height: 500px;
+ 	background: url("/static/images/splash.png") no-repeat scroll center top transparent;
+ 	border-bottom: thin solid #D8D8D8;
+ 	background-size: 100%;
+ 	line-height: 400px;
+ 	font-size: 50px;
+ 	font-weight: 700;
+ 	color: #fff;
+ 	text-align: center;
+ 	overflow: scroll;
+
+
+ }
+ 
  .page2 {
  	width: 100% !important; 
- 	min-width: 800px;
+ 	min-width: 1000px;
  	height: 400px;
  	background-color: #F1F2F2;
  	border-bottom: thin solid #D8D8D8;
@@ -102,10 +127,14 @@ h2{
   color: #fff;
  }
  .signup:hover  {
- 	height: 100%;
- 	line-height: 65px;
- 	margin-top: -22px;
+ 	height: 60px;
+ 	line-height: 60px;
+ 	margin-top: -18px;
  	border-radius: 0px;
+ 	-webkit-transition: .35s;
+  -moz-transition: .35s;
+  -o-transition: .35s;
+  transition: .35s;
 
  }
 .piccontainer {
@@ -199,6 +228,7 @@ margin-top: 40px;
   padding-left: 5px;
   padding-bottom: 11px;
   padding-top: 11px;
+  padding-right: 13px;
   box-shadow: none;
   border: none;
   font-size: 14px;
@@ -210,6 +240,10 @@ margin-top: 40px;
 		border: 2px solid #C0392B;
 		color: #C0392B;
 
+}
+.form-login.error:focus {
+	border: 2px solid #C0392B;
+	color: #C0392B;
 }
 .form-login.error::-webkit-input-placeholder { /* WebKit browsers */
     color:    #C0392B;
@@ -234,6 +268,11 @@ margin-top: 40px;
 .form-login.green:focus {
 	border: 2px solid #16A085;
 
+}
+.form-login.error:focus {
+	border: 2px solid #C0392B;
+	color: #C0392B;
+	
 }
 .form-login.grayoutline {
 	border: 2px solid #95A5A6; 
@@ -296,6 +335,7 @@ background-color: #16A085;
   font-size: 14px;
   font-weight: 300;
   color: #fff;
+  line-height: 50px;
 }
 /*.signin-login:hover {
 	background-color: #AE7ECD;
@@ -338,4 +378,115 @@ background-color: #16A085;
 .half {
 	width: 198px;
 }
- 
+.circular {
+	width: 200px;
+	height: 200px;
+	border-radius: 200px;
+	-webkit-border-radius: 200px;
+	-moz-border-radius: 200px;
+	background: url(http://link-to-your/image.jpg) no-repeat;
+	
+	}
+	.skill{
+ 	max-width: 150px;
+ 	min-width: 60px;
+  border-radius: 3px;
+  background-color: #3969AB;
+  
+  height: 44px;
+  min-width: 30px !important;
+  line-height: 44px;
+/*  margin: 20px;
+*/  z-index: 10;
+  padding:0px 20px;
+  color: #fff;
+  padding-top: 3px;
+  padding-bottom: 3px;
+ }
+ #link a{
+ 	color: #fff;
+ }
+ #link a {
+ 	text-decoration: none;
+ }
+  .mid-section {
+  background: #ffffff;
+  padding: 0;
+}
+.mid {
+  background-color: #f1f1f1;
+  padding: 80px 0 0;
+}
+.mid-text {
+  padding: 0 0 80px;
+}
+.mid .inner div {
+    width: 30%;
+    float: left;
+    text-align: center
+}
+.center-icon {
+  margin: 0 5%;
+}
+.mid div img {
+    margin-bottom: 0;
+    max-width: 150px;
+}
+.mid div h2 {
+  color: #465568; 
+  font-size: 24px; 
+  line-height: 30px;
+  font-weight: normal;
+  margin: 0 15px 25px;
+}
+
+.mid div p {
+  color: #6e7988;
+  text-align: left;
+  font-weight: 300;
+  font-size: 14px; 
+  line-height: 24px;
+}
+#mail {
+	background: white url("/static/images/mail-grey.png") 98% no-repeat;
+	background-size: 17px;
+   	padding-right: 30px !important;
+}
+#mail:focus {
+	background: white url("/static/images/mail-green.png") 98% no-repeat;
+	background-size: 17px;
+	-webkit-transition: 0.35s;
+  -moz-transition: 0.35s;
+  -o-transition: 0.35s;
+  transition: 0.35s;
+
+}
+#lock {
+	background: white url("/static/images/lock-grey.png") 98% no-repeat;
+	background-size: 17px;
+   	padding-right: 30px !important;
+}
+#lock:focus {
+	background: white url("/static/images/lock-green.png") 98% no-repeat;
+	background-size: 17px;
+	-webkit-transition: 0.35s;
+  -moz-transition: 0.35s;
+  -o-transition: 0.35s;
+  transition: 0.35s;
+
+}
+.small {
+	width: 80px;
+	height: 80px;
+	border-radius: 80px;
+	-webkit-border-radius: 80px;
+	-moz-border-radius: 80px;
+	background: url(http://link-to-your/image.jpg) no-repeat;
+	
+	}
+.profileInfo{
+	width: 600px;
+}
+#message:focus{
+	outline: none;
+}

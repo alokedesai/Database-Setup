@@ -429,7 +429,7 @@ def sresults():
     users = uniquifyo(users)
     names = []
     for user in users:
-        names.append(uni(user.username))
+        names.append({"username" : uni(user.username)} , {"name" : uni(user.first_name) + uni(user.last_name)}, {"school" : uni(user.school)})
     return render_template('sresults.html',names=names)
 
 @app.route('/upload', methods=['GET', 'POST'])

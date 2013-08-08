@@ -1,7 +1,8 @@
 body {
 	font-family: "Roboto", sans-serif;
-	margin: 0;
-	padding: 0;
+	margin: 0px;
+	padding: 0px;
+	overflow-x: hidden;
 }
 h2{
 	font-weight: 300;
@@ -39,6 +40,7 @@ h1{
 		
 		padding-right: 0px;
 }
+
 #nav li a:hover{
 		color: #9BC4E2;
 		}
@@ -128,8 +130,11 @@ h1{
  	height: 60px;
  	line-height: 60px;
  	margin-top: -18px;
-
  	border-radius: 0px;
+ 	-webkit-transition: .35s;
+  -moz-transition: .35s;
+  -o-transition: .35s;
+  transition: .35s;
 
  }
 .piccontainer {
@@ -330,6 +335,7 @@ background-color: #16A085;
   font-size: 14px;
   font-weight: 300;
   color: #fff;
+  line-height: 50px;
 }
 /*.signin-login:hover {
 	background-color: #AE7ECD;
@@ -480,4 +486,7 @@ background-color: #16A085;
 	}
 .profileInfo{
 	width: 600px;
+}
+#message:focus{
+	outline: none;
 }

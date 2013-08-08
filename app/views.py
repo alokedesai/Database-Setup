@@ -346,7 +346,7 @@ def sresults():
             # gravatar_url += urllib.urlencode({'default':default, 's':str(size)})
         gravatar_url += "?" + "s=" + str(size) +"&" + "d=" + "mm"
         skills = user.skills.all()
-        if skills >= 5:
+        if skills > 3:
             skills = skills[:3]
         skill = []
         for i in skills:
@@ -400,7 +400,7 @@ def start():
 @app.route("/converse/<username>",methods=["GET"])
 @login_required
 def converse(username):
-    return render_template("compose.html",username=username)
+    return render_template("compose.html",username=username, first = uni(loggedUser.first_name), last = uni(loggedUser.last_name))
 @app.route("/profile/<username>")
 @login_required 
 def profile(username):

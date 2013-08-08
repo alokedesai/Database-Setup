@@ -67,7 +67,7 @@
 
           <div style="margin-top: 75px; position: relative;">
             <h2 style="left: 60px; position: relative;">Skills</h2>
-          <div class="skills" style="right: 150px; height: 300px; overflow-y: scroll; width:500px; text-align:center; position: relative;">
+          <div class="skills" style="right: 150px; height: auto; overflow-y: scroll; width:500px; text-align:center; position: relative;">
         
 
     {% for skill in s %}
@@ -82,15 +82,21 @@
 
     <a style="text-decoration:none;" href="/uploads/{{files}}"><div class ="signin-login green" id="link" style="line-height:50px; text-align:center; width: 200;text-decoration: none; left: 250px; position:relative;"> View Resume</div></a> 
     {% else %}
-      This user hasn't uploaded a resume.
+      <div  id="link" style="text-align:center; width: 200;text-decoration: none; left: 250px; position:relative;">This user hasn't uploaded a resume.</div>
     {% endif %}
       </div>
    
 
 </div>
+<div style="margin-left: 30%; padding-top: 50px;">
+  <a style="text-decoration:none;" id="message" href="/converse/{{username}}"><div class="signin-login green" style="line-height: 50px; text-align:center; font-weight: 300; font-size: 16px;" > Message This User </div></a>
 
+
+ </div> 
 </div>
+<script>
+$("#message").colorbox({opacity: 0.8});
 
-
+</script>
 </body>
 </html>

@@ -21,9 +21,9 @@
                       <a href={{ url_for('logout') }}><div class="login">LOGOUT</div></a>
                       {% endif %}
                     </li>
-                    <li >
+                    <li>
                       {% if not logged %}
-                      <a href={{ url_for('signup') }}> <div class="signup">GET STARTED</div></a>
+                      <a class="si" href={{ url_for('signup') }}> <div class="signup">GET STARTED</div></a>
                       {% else %}
                        <a href={{ url_for('settings', username = (curUsername)) }}> <div class="signup">MY PROFILE</div></a>
                        {% endif %}

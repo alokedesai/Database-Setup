@@ -18,7 +18,7 @@ class User(db.Model):
     experience  = db.relationship("Experience", backref='user',lazy='dynamic')
     files = db.relationship('File',backref='user',lazy='dynamic')
     conversation = db.relationship('Conversation',backref='user',lazy='dynamic')
-    
+    conversation_reply = db.relationship('Conversation_Reply',backref='user',lazy='dynamic')
     def is_authenticated(self):
         return True
     def is_active(self):
@@ -63,10 +63,17 @@ class Conversation(db.Model):
     user1 = db.Column(db.Integer, db.ForeignKey("user.id"))
     user2 = db.Column(db.Integer, db.ForeignKey("user.id"))
     timestamp = db.Column(db.DateTime)
-
+    conversation_reply = db.relationship('Conversation_Reply',backref='conversation',lazy='dynamic')
     def __repr__(self):
         return "<Conversation %r>" % self.subject
-	
+class Conversation_Reply(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    reply = db.Column(db.String(10000))
+    user_id_fk = db.Column(db.Integer, db.ForeignKey("user.id"))
+    time = db.Column(db.DateTime)
+    c_id_fk = db.Column(db.String(11), db.ForeignKey("conversation.id"))
+
+
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     sender = db.Column(db.String(80))

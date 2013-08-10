@@ -17,7 +17,7 @@ class User(db.Model):
     skills = db.relationship('Skills',backref='user',lazy='dynamic')
     experience  = db.relationship("Experience", backref='user',lazy='dynamic')
     files = db.relationship('File',backref='user',lazy='dynamic')
-    
+    conversation = db.relationship('Conversation',backref='user',lazy='dynamic')
     
     def is_authenticated(self):
         return True
@@ -60,10 +60,9 @@ class File(db.Model):
 class Conversation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     subject = db.Column(db.String(80))
-    user1 = db.Column(db.String(80))
-    user2 = db.Column(db.String(80))
+    user1 = db.Column(db.Integer, db.ForeignKey("user.id"))
+    user2 = db.Column(db.Integer, db.ForeignKey("user.id"))
     timestamp = db.Column(db.DateTime)
-    messages = db.relationship('Message',backref='conversation',lazy='dynamic')
 
     def __repr__(self):
         return "<Conversation %r>" % self.subject

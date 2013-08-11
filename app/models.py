@@ -17,8 +17,11 @@ class User(db.Model):
     skills = db.relationship('Skills',backref='user',lazy='dynamic')
     experience  = db.relationship("Experience", backref='user',lazy='dynamic')
     files = db.relationship('File',backref='user',lazy='dynamic')
-    conversation = db.relationship('Conversation',backref='user',lazy='dynamic')
-    conversation_reply = db.relationship('Conversation_Reply',backref='user',lazy='dynamic')
+    all_conversations = db.relationship('Conversation',
+        primaryjoin='or_(User.id == Conversation.user1_id, User.id == ' \
+        'Conversation.user2_id)', lazy='dynamic')
+    # Replies where this is this user.
+    replies = db.relationship("Reply", backref="user")
     def is_authenticated(self):
         return True
     def is_active(self):
@@ -59,20 +62,34 @@ class File(db.Model):
     
 class Conversation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    subject = db.Column(db.String(80))
-    user1 = db.Column(db.Integer, db.ForeignKey("user.id"))
-    user2 = db.Column(db.Integer, db.ForeignKey("user.id"))
-    timestamp = db.Column(db.DateTime)
-    conversation_reply = db.relationship('Conversation_Reply',backref='conversation',lazy='dynamic')
+    user1_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    user2_id = db.Column(db.Integer, db.ForeignKey("user.id"))        
+    user1 = db.relationship('User', foreign_keys=[user1_id], 
+        backref='conversations_as_user1')       
+    user2 = db.relationship('User', foreign_keys=[user2_id], 
+        backref='conversations_as_user2')
+    # Replies to this conversation.
+    replies = db.relationship("Reply", backref="conversation")
+   
+    def __init__(self,user1, user2):
+        self.user1 = user1
+        self.user2 = user2
+            
+        
     def __repr__(self):
-        return "<Conversation %r>" % self.subject
-class Conversation_Reply(db.Model):
+        return "<Conversation %r>" % self.user1
+class Reply(db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    reply = db.Column(db.String(10000))
-    user_id_fk = db.Column(db.Integer, db.ForeignKey("user.id"))
-    time = db.Column(db.DateTime)
-    c_id_fk = db.Column(db.String(11), db.ForeignKey("conversation.id"))
+    reply = db.Column(db.Text)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    conversation_id = db.Column(db.Integer, db.ForeignKey("conversation.id"))
 
+    def __init__(self, reply,user_id, time):
+        self.reply = reply
+        self.user_id = user_id
+        self.time = time
+    def __repr__(self):
+        return "<Reply %r>" % self.reply
 
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)

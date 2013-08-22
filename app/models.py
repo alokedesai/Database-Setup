@@ -2,7 +2,23 @@ from app import db
 from app import app
 import re
 
+class Conversation(db.Model):
+    __tablename__='conversation'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = db.relationship('User',foreign_keys=[user_id],
+        backref=db.backref('conversations', lazy='dynamic'))
+    user2_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user2 = db.relationship('User',foreign_keys=[user2_id],
+                            backref=db.backref('conversations2',lazy='dynamic'))
+    extra_data = db.Column(db.String(50),unique=False)
+    def __init__(self, user, user2, extra_data):
+        self.user = user
+        self.user2 = user2
+        self.extra_data = extra_data
+
 class User(db.Model):
+    __tablename__='user'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True)
     first_name = db.Column(db.String(120), unique = False)
@@ -17,11 +33,11 @@ class User(db.Model):
     skills = db.relationship('Skills',backref='user',lazy='dynamic')
     experience  = db.relationship("Experience", backref='user',lazy='dynamic')
     files = db.relationship('File',backref='user',lazy='dynamic')
-    all_conversations = db.relationship('Conversation',
-        primaryjoin='or_(User.id == Conversation.user1_id, User.id == ' \
-        'Conversation.user2_id)', lazy='dynamic')
+   #all_conversations = db.relationship('Conversation',
+    #    primaryjoin='or_(User.id == Conversation.user1_id, User.id == ' \
+    #    'Conversation.user2_id)', lazy='dynamic')
     # Replies where this is this user.
-    replies = db.relationship("Reply", backref="user")
+    #replies = db.relationship("Reply", backref="user")
     def is_authenticated(self):
         return True
     def is_active(self):
@@ -60,36 +76,36 @@ class File(db.Model):
     def __repr__(self):
         return "<File %r>" % self.filename
     
-class Conversation(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user1_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-    user2_id = db.Column(db.Integer, db.ForeignKey("user.id"))        
-    user1 = db.relationship('User', foreign_keys=[user1_id], 
-        backref='conversations_as_user1')       
-    user2 = db.relationship('User', foreign_keys=[user2_id], 
-        backref='conversations_as_user2')
-    # Replies to this conversation.
-    replies = db.relationship("Reply", backref="conversation")
-   
-    def __init__(self,user1, user2):
-        self.user1 = user1
-        self.user2 = user2
-            
-        
-    def __repr__(self):
-        return "<Conversation %r>" % self.user1
-class Reply(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
-    reply = db.Column(db.Text)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-    conversation_id = db.Column(db.Integer, db.ForeignKey("conversation.id"))
-
-    def __init__(self, reply,user_id, time):
-        self.reply = reply
-        self.user_id = user_id
-        self.time = time
-    def __repr__(self):
-        return "<Reply %r>" % self.reply
+#class Conversation(db.Model):
+#    id = db.Column(db.Integer, primary_key=True)
+#    user1_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+#    user2_id = db.Column(db.Integer, db.ForeignKey("user.id"))        
+#    user1 = db.relationship('User', foreign_keys=[user1_id], 
+#        backref='conversations_as_user1')       
+#    user2 = db.relationship('User', foreign_keys=[user2_id], 
+#        backref='conversations_as_user2')
+#    # Replies to this conversation.
+#    replies = db.relationship("Reply", backref="conversation")
+#   
+#    def __init__(self,user1, user2):
+#        self.user1 = user1
+#        self.user2 = user2
+#            
+#        
+#    def __repr__(self):
+#        return "<Conversation %r>" % self.user1
+#class Reply(db.Model):
+#    id = db.Column(db.Integer, primary_key = True)
+#    reply = db.Column(db.Text)
+#    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+#    conversation_id = db.Column(db.Integer, db.ForeignKey("conversation.id"))
+#
+#    def __init__(self, reply,user_id, time):
+#        self.reply = reply
+#        self.user_id = user_id
+#        self.time = time
+#    def __repr__(self):
+#        return "<Reply %r>" % self.reply
 
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -97,7 +113,7 @@ class Message(db.Model):
     body = db.Column(db.String(140))
     timestamp = db.Column(db.DateTime)
     conversation_id = db.Column(db.Integer, db.ForeignKey('conversation.id'))
-
+    conversation = db.relationship("Conversation", backref=db.backref("messages",lazy="dynamic"))
     def __repr__(self):
         return "<Message %r>" % self.sender
 

@@ -1,6 +1,6 @@
 from app import db
 from app import app
-import re
+import re,datetime
 
 class Conversation(db.Model):
     __tablename__='conversation'
@@ -11,11 +11,14 @@ class Conversation(db.Model):
     user2_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     user2 = db.relationship('User',foreign_keys=[user2_id],
                             backref=db.backref('conversations2',lazy='dynamic'))
-    extra_data = db.Column(db.String(50),unique=False)
-    def __init__(self, user, user2, extra_data):
+    subject = db.Column(db.String(50),unique=False)
+    timestamp = db.Column(db.DateTime)
+    
+    def __init__(self, user, user2, subject):
         self.user = user
         self.user2 = user2
-        self.extra_data = extra_data
+        self.subject = subject
+        self.timestamp = datetime.datetime.utcnow()
 
 class User(db.Model):
     __tablename__='user'

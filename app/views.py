@@ -304,8 +304,7 @@ def replying():
     Body = request.form['body']
     user = request.form['user']
     c = Conversation.query.get(ID)
-    if uni(c.user2) == user: Sender = uni(c.user1)
-    else: Sender = uni(c.user2)
+    Sender = loggedUser.username.encode("utf-8")
     m = Message(sender=Sender,body=Body,timestamp=datetime.datetime.utcnow(),conversation=c)
     db.session.add(m)
     try:
@@ -426,8 +425,9 @@ def profile(username):
         user = User.query.filter_by(username=username).first()
         skill = user.skills.all()
         experience = user.experience.all()
-        files = user.files.all()[0]
-        files = files.filename.encode("utf-8")
+        files = user.files.all()
+        #files = files.filename.encode("utf-8")
+        files = "resume"
         for SKILLS in skill:
             s.append(SKILLS.skill.encode('utf-8'))
         for exper in experience:

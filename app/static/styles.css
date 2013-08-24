@@ -52,7 +52,9 @@ h1{
 	
   
    font-size: 1.3em;
-   padding: 0.8em;
+   padding-top: 18px;
+   padding-bottom: 15px;
+   padding-left: 10px;
 
    background: white;
 	height: 45px;  

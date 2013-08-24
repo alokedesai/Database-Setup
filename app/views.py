@@ -233,13 +233,18 @@ def settings(username):
             
             skill = user.skills.all()
             files = user.files.all()
-            conversationsS = Conversation.query.filter_by(user1=unicodedata.normalize('NFKD',user.username).encode('ascii','ignore')).all()
-            conversationsR = Conversation.query.filter_by(user2=unicodedata.normalize('NFKD',user.username).encode('ascii','ignore')).all()
+            conversations = Conversation.query.all()
+            conversationsS = []
+            for conversation in conversations:
+                if conversation.user.username.encode("utf-8")==username or conversation.user2.username.encode("utf-8")==username:
+                    conversationsS.append(conversation)
             experience = user.experience.all()
             for c in conversationsS:
-                cS.append({'user': uni(c.user2), 'subject': uni(c.subject), 'timestamp': c.timestamp, 'id': c.id})
-            for c in conversationsR:
-                cR.append({'user': uni(c.user1), 'subject': uni(c.subject), 'timestamp': c.timestamp, 'id': c.id})
+                if c.user.username == username:
+                    cS.append({'user': uni(c.user2.username), 'subject': uni(c.subject), 'timestamp': c.timestamp, 'id': c.id})
+                else:
+                    cS.append({'user': uni(c.user.username), 'subject': uni(c.subject), 'timestamp': c.timestamp, 'id': c.id})
+           
             for SKILLS in skill:
                 s.append(uni(SKILLS.skill))
             for fil in files:
@@ -250,19 +255,24 @@ def settings(username):
                 files = f[0] 
             for exper in experience:
                 exp.append({"title" : exper.title.encode("utf-8"), "company" : exper.company.encode("utf-8"), "description" : exper.description.encode("utf-8")})
-            return render_template("settings.html",username=username,s=s,cS=cS,cR=cR, experience = exp, profpic = gravatar_url, files = files, logged = loggedUser, year = uni(loggedUser.grad_year), major = major, school = school, first = loggedUser.first_name.encode("utf-8"), last = loggedUser.last_name.encode("utf-8"), curUsername = username)
+            return render_template("settings.html",username=username,s=s,cS=cS, experience = exp, profpic = gravatar_url, files = files, logged = loggedUser, year = uni(loggedUser.grad_year), major = major, school = school, first = loggedUser.first_name.encode("utf-8"), last = loggedUser.last_name.encode("utf-8"), curUsername = username)
         else:
             cS = []
             cR = []
             s = []
             user = User.query.filter_by(username=username).first()
 
-            conversationsS = Conversation.query.filter_by(user1=user.username.encode('utf-8'))
-            conversationsR = Conversation.query.filter_by(user2=user.username.encode('utf-8'))
+            conversations = Conversation.query.all()
+            conversationsS = []
+            for conversation in conversations:
+                if conversation.user.username.encode("utf-8")==username or conversation.user2.username.encode("utf-8")==username:
+                    conversationsS.append(conversation)
+            experience = user.experience.all()
             for c in conversationsS:
-                cS.append({'user': uni(c.user2), 'subject': uni(c.subject), 'timestamp': c.timestamp, 'id': c.id})
-            for c in conversationsR:
-                cR.append({'user': uni(c.user1), 'subject': uni(c.subject), 'timestamp': c.timestamp, 'id': c.id})
+                if c.user.username == username:
+                    cS.append({'user': uni(c.user2.username), 'subject': uni(c.subject), 'timestamp': c.timestamp, 'id': c.id})
+                else:
+                    cS.append({'user': uni(c.user.username), 'subject': uni(c.subject), 'timestamp': c.timestamp, 'id': c.id})
             user = User.query.filter_by(username=username).first()
 
             return render_template("company-settings.html",username=username,s=s,cS=cS,cR=cR)
@@ -294,8 +304,7 @@ def replying():
     Body = request.form['body']
     user = request.form['user']
     c = Conversation.query.get(ID)
-    if uni(c.user2) == user: Sender = uni(c.user1)
-    else: Sender = uni(c.user2)
+    Sender = loggedUser.username.encode("utf-8")
     m = Message(sender=Sender,body=Body,timestamp=datetime.datetime.utcnow(),conversation=c)
     db.session.add(m)
     try:
@@ -373,12 +382,14 @@ def uploaded_file(filename):
 @app.route("/start",methods=["GET","POST"])
 @login_required
 def start():
-    Sender = request.form["user"];
+    Sender = loggedUser.username.encode('utf-8');
+    sender = User.query.filter_by(username=Sender).first()
     Receiver = request.form["to"]
     if User.query.filter_by(username=Receiver).first() == None: return "Invalid User!"
+    receiver = User.query.filter_by(username=Receiver).first()
     Subject = request.form["subject"]
     body = request.form["body"]
-    c =  Conversation(subject=Subject,user1=Sender,user2=Receiver,timestamp=datetime.datetime.utcnow())
+    c =  Conversation(sender,receiver,Subject)
     db.session.add(c)
     try :
         db.session.commit()
@@ -414,8 +425,9 @@ def profile(username):
         user = User.query.filter_by(username=username).first()
         skill = user.skills.all()
         experience = user.experience.all()
-        files = user.files.all()[0]
-        files = files.filename.encode("utf-8")
+        files = user.files.all()
+        #files = files.filename.encode("utf-8")
+        files = "resume"
         for SKILLS in skill:
             s.append(SKILLS.skill.encode('utf-8'))
         for exper in experience:

@@ -1,7 +1,7 @@
 from app import app, login_manager, loggedUser, db
 from flask import Flask, flash, render_template, session, url_for, request, redirect, g, send_from_directory
 from flask.ext.login import login_user, logout_user, current_user, login_required
-from models import User,Skills,File,Experience,Conversation,Message
+from models import User,Skills,File,Experience,Conversation,Message,Ratings
 from forms import LoginForm
 import urllib, hashlib
 from config import ALLOWED_EXTENSIONS
@@ -9,6 +9,13 @@ from werkzeug import secure_filename
 import os
 import datetime, operator
 import unicodedata
+
+def rating(x):
+    total = 0
+    for y in x:
+        total += y.stars
+    total = total/len(x)
+    return total
 
 def uni(x):
     return x.encode('utf-8')
@@ -214,7 +221,7 @@ def settings(username):
     if username == loggedUser.username.encode("utf-8"):
         if User.query.get(current_user.get_id()).role == "developer":
             cS = []
-            cR = []
+            R = []
             s = []
             exp =[]
             f=[]
@@ -233,13 +240,13 @@ def settings(username):
             
             skill = user.skills.all()
             files = user.files.all()
-            conversations = Conversation.query.all()
-            conversationsS = []
-            for conversation in conversations:
-                if conversation.user.username.encode("utf-8")==username or conversation.user2.username.encode("utf-8")==username:
-                    conversationsS.append(conversation)
+            conversations = user.conversations.all() + user.conversations2.all()
             experience = user.experience.all()
-            for c in conversationsS:
+            ratings = user.rated.all()
+            avg = rating(ratings)
+            for r in ratings:
+                R.append({'rater': uni(r.rated.username), 'stars': r.stars, 'review': r.review, 'id': r.id})
+            for c in conversations:
                 if c.user.username == username:
                     cS.append({'user': uni(c.user2.username), 'subject': uni(c.subject), 'timestamp': c.timestamp, 'id': c.id})
                 else:
@@ -255,29 +262,43 @@ def settings(username):
                 files = f[0] 
             for exper in experience:
                 exp.append({"title" : exper.title.encode("utf-8"), "company" : exper.company.encode("utf-8"), "description" : exper.description.encode("utf-8")})
-            return render_template("settings.html",username=username,s=s,cS=cS, experience = exp, profpic = gravatar_url, files = files, logged = loggedUser, year = uni(loggedUser.grad_year), major = major, school = school, first = loggedUser.first_name.encode("utf-8"), last = loggedUser.last_name.encode("utf-8"), curUsername = username)
+            return render_template("settings.html",username=username,s=s,cS=cS,R=R,avg=avg, experience = exp, profpic = gravatar_url, files = files, logged = loggedUser, year = uni(loggedUser.grad_year), major = major, school = school, first = loggedUser.first_name.encode("utf-8"), last = loggedUser.last_name.encode("utf-8"), curUsername = username)
         else:
             cS = []
-            cR = []
             s = []
             user = User.query.filter_by(username=username).first()
-
-            conversations = Conversation.query.all()
-            conversationsS = []
-            for conversation in conversations:
-                if conversation.user.username.encode("utf-8")==username or conversation.user2.username.encode("utf-8")==username:
-                    conversationsS.append(conversation)
+            
+            conversations = user.conversations.all()+user.conversations2.all()
             experience = user.experience.all()
-            for c in conversationsS:
+            for c in conversations:
                 if c.user.username == username:
                     cS.append({'user': uni(c.user2.username), 'subject': uni(c.subject), 'timestamp': c.timestamp, 'id': c.id})
                 else:
                     cS.append({'user': uni(c.user.username), 'subject': uni(c.subject), 'timestamp': c.timestamp, 'id': c.id})
             user = User.query.filter_by(username=username).first()
 
-            return render_template("company-settings.html",username=username,s=s,cS=cS,cR=cR)
+            return render_template("company-settings.html",username=username,s=s,cS=cS,R=R)
     else:
         return redirect("/")
+
+@app.route("/rating/ID/<ID>")
+@login_required
+def rating_id(ID):
+    r = Ratings.query.get(ID)
+    R = []
+    R.append({'stars':r.stars,'rated':uni(r.rated.username),'rater':uni(r.rater.username),'review':r.review})
+    return render_template("ratings.html",rated=uni(r.rated.username),R=R)
+
+@app.route("/rating/user/<user>")
+@login_required
+def rating_user(user):
+    u = User.query.filter_by(username=user).first()
+    r = u.rated.all()
+    R = []
+    for rating in r:
+        R.append({'stars':rating.stars,'rated':uni(rating.rated.username),'rater':uni(rating.rater.username),'review':rating.review})
+    return render_template("ratings.html",rated=user,R=R)
+
 @app.route("/conversation/<ID>/<user>")
 @login_required
 def conversation(ID,user):

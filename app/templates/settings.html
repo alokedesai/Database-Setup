@@ -37,66 +37,84 @@
          <div style="margin-left: 20%; background: url({{profpic}}); margin-top: 12px;" class="circular" >  </div>
 
          <div style="left: 25%; position: relative;">
-          <h2>Experience</h2>
-          
-    {% for e in experience %}
-    <div style="margin-top: 20px;">
-    <div style="font-weight: 700; font-size: 18px;"> 
-      {{e["title"]}}
-    </div>
-    <div style="padding-top: 2px;">
-      {{e["company"]}}
-    </div>
-    <div style="font-weight:100; padding-top: 5px; width: 250px; overflow: scroll;">
-      <!-- {{e["description"]}} -->
-      {{e["description"]}} 
-
-    </div>
-  </div>
-
-
-    {% endfor %}
-  </div>
-
-       </div>
+           <h2>Experience</h2>
+           
+	   {% for e in experience %}
+	   <div style="margin-top: 20px;">
+	     <div style="font-weight: 700; font-size: 18px;"> 
+	       {{e["title"]}}
+	     </div>
+	     <div style="padding-top: 2px;">
+	       {{e["company"]}}
+	     </div>
+	     <div style="font-weight:100; padding-top: 5px; width: 250px; overflow: scroll;">
+	       <!-- {{e["description"]}} -->
+	       {{e["description"]}} 
+	       
+	     </div>
+	   </div>
+	   
+	   
+	   {% endfor %}
+	 </div>
+	 
+	</div>
         <div style="position:relative; left: 50%; padding-top: 15px;">
-            <div class="profileInfo" style="padding-bottom: 15px;"><h1> {{first}} {{last}} </h1></div>
-            <div style="margin-top: -50"><img style="padding-right: 15px;" src="/static/school.png" height="15"/>{{school}} </div>
+          <div class="profileInfo" style="padding-bottom: 15px;"><h1> {{first}} {{last}} </h1></div>
+          <div style="margin-top: -50"><img style="padding-right: 15px;" src="/static/school.png" height="15"/>{{school}} </div>
           <div><img style="padding-right: 10px;" src="/static/Hat.png" height="15"/>{{major}} </div>
           <div><img style="padding-right: 13px;" src="/static/clock.jpeg" height="15"/>{{year}} </div>
-
+	  
           <div style="margin-top: 75px; position: relative;">
             <h2 style="left: 60px; position: relative;">Skills</h2>
-          <div class="skills" style="right: 150px; height: auto; overflow-y: scroll; width:500px; text-align:center; position: relative;">
-        
-
-    {% for skill in s %}
-    <span class="skill" >{{skill}}</span>
-   
-    {% endfor %}
-        </div>
+            <div class="skills" style="right: 150px; height: auto; overflow-y: scroll; width:500px; text-align:center; position: relative;">
+              
+	      
+	      {% for skill in s %}
+	      <span class="skill" >{{skill}}</span>
+	      
+	      {% endfor %}
+            </div>
+	  </div>
+	  <div>
+	    <h2 style="left: 60px; position relative;">Messages</h2>
+	    {% for convo in cS %}
+	    <a href="/conversation/{{convo.id}}/{{username}}"><span>{{convo.user}} - {{convo.subject}} - {{convo.timestamp}}</span></a>
+	    {% endfor %}
+	  </div>
+	  <div>
+	    <a href="/rating/user/{{username}}"><h2>Ratings</h2></a>
+	    <span>Average Rating: {{avg}}</span>
+	    <ul>
+	      {% for r in R %}
+	      <a href="/rating/ID/{{r.id}}"><li>{{r.stars}} - {{r.rater}} - {{r.review}}</li></a>
+	      {% endfor %}
+	    </ul>
+	    
+	  </div>
+	  
+	  
+	  
+	  <div style="padding-top:30px; position: relative;" >
+            {% if files %}
+	    
+	    <a style="text-decoration:none;" href="/uploads/{{files}}"><div class ="signin-login green" id="link" style="line-height:50px; text-align:center; width: 200;text-decoration: none; left: 250px; position:relative;"> View Resume</div></a> 
+	    {% else %}
+	    <div  id="link" style="text-align:center; width: 200;text-decoration: none; left: 250px; position:relative;">This user hasn't uploaded a resume.</div>
+	    {% endif %}
+	  </div>
+	  
+	  
+	</div>
+	<div style="margin-left: 30%; padding-top: 50px;">
+	  <a style="text-decoration:none;" id="message" href="/converse/{{username}}"><div class="signin-login green" style="line-height: 50px; text-align:center; font-weight: 300; font-size: 16px;" > Message This User </div></a>
+	  
+	  
+	</div> 
       </div>
-
-       <div style="padding-top:30px; position: relative;" >
-          {% if files %}
-
-    <a style="text-decoration:none;" href="/uploads/{{files}}"><div class ="signin-login green" id="link" style="line-height:50px; text-align:center; width: 200;text-decoration: none; left: 250px; position:relative;"> View Resume</div></a> 
-    {% else %}
-      <div  id="link" style="text-align:center; width: 200;text-decoration: none; left: 250px; position:relative;">This user hasn't uploaded a resume.</div>
-    {% endif %}
-      </div>
-   
-
-</div>
-<div style="margin-left: 30%; padding-top: 50px;">
-  <a style="text-decoration:none;" id="message" href="/converse/{{username}}"><div class="signin-login green" style="line-height: 50px; text-align:center; font-weight: 300; font-size: 16px;" > Message This User </div></a>
-
-
- </div> 
-</div>
-<script>
-$("#message").colorbox({opacity: 0.8});
-
-</script>
+      <script>
+	$("#message").colorbox({opacity: 0.8});
+	
+      </script>
 </body>
 </html>

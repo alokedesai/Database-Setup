@@ -1,0 +1,13 @@
+<html>
+  <head>
+    <title>Ratings</title>
+  </head>
+  <body>
+    <h2>{{rated}}</h2>
+    <ul>
+      {% for r in R %}
+      <li>{{r.stars}} - {{r.rater}} - {{r.review}}</li>
+      {% endfor %}
+    </ul>
+  </body>
+</html>

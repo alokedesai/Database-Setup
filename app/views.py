@@ -262,7 +262,7 @@ def settings(username):
                 files = f[0] 
             for exper in experience:
                 exp.append({"title" : exper.title.encode("utf-8"), "company" : exper.company.encode("utf-8"), "description" : exper.description.encode("utf-8")})
-            return render_template("settings.html",username=username,s=s,cS=cS,R=R,avg=avg, experience = exp, profpic = gravatar_url, files = files, logged = loggedUser, year = uni(loggedUser.grad_year), major = major, school = school, first = loggedUser.first_name.encode("utf-8"), last = loggedUser.last_name.encode("utf-8"), curUsername = username)
+            return render_template("settings.html",username=username,s=s,cS=cS,review=R,avg=avg, experience = exp, profpic = gravatar_url, files = files, logged = loggedUser, year = uni(loggedUser.grad_year), major = major, school = school, first = loggedUser.first_name.encode("utf-8"), last = loggedUser.last_name.encode("utf-8"), curUsername = username)
         else:
             cS = []
             s = []
@@ -277,7 +277,7 @@ def settings(username):
                     cS.append({'user': uni(c.user.username), 'subject': uni(c.subject), 'timestamp': c.timestamp, 'id': c.id})
             user = User.query.filter_by(username=username).first()
 
-            return render_template("company-settings.html",username=username,s=s,cS=cS,R=R)
+            return render_template("company-settings.html",username=username,s=s,cS=cS)
     else:
         return redirect("/")
 

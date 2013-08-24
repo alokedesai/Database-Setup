@@ -243,7 +243,10 @@ def settings(username):
             conversations = user.conversations.all() + user.conversations2.all()
             experience = user.experience.all()
             ratings = user.rated.all()
-            avg = rating(ratings)
+            if len(ratings) > 0:
+                avg = rating(ratings)
+            else:
+                avg = 0
             for r in ratings:
                 R.append({'rater': uni(r.rated.username), 'stars': r.stars, 'review': r.review, 'id': r.id})
             for c in conversations:

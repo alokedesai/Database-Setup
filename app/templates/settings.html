@@ -76,22 +76,22 @@
 	      {% endfor %}
             </div>
 	  </div>
-	  <div>
+	 <!--  <div>
 	    <h2 style="left: 60px; position relative;">Messages</h2>
 	    {% for convo in cS %}
 	    <a href="/conversation/{{convo.id}}/{{username}}"><span>{{convo.user}} - {{convo.subject}} - {{convo.timestamp}}</span></a>
 	    {% endfor %}
-	  </div>
-	  <div>
+	  </div> -->
+	<!--   <div>
 	    <a href="/rating/user/{{username}}"><h2>Ratings</h2></a>
 	    <span>Average Rating: {{avg}}</span>
 	    <ul>
-	      {% for r in R %}
+	      {% for r in review %}
 	      <a href="/rating/ID/{{r.id}}"><li>{{r.stars}} - {{r.rater}} - {{r.review}}</li></a>
 	      {% endfor %}
 	    </ul>
 	    
-	  </div>
+	  </div> -->
 	  
 	  
 	  

@@ -292,7 +292,7 @@ def rating_id(ID):
     R.append({'stars':r.stars,'rated':uni(r.rated.username),'rater':uni(r.rater.username),'review':r.review})
     return render_template("ratings.html",rated=uni(r.rated.username),R=R)
 
-@app.route("/rating/user/<user>")
+@app.route("/rating/<user>")
 @login_required
 def rating_user(user):
     u = User.query.filter_by(username=user).first()

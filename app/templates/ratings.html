@@ -1,13 +1,33 @@
 <html>
   <head>
     <title>Ratings</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type="text/javascript"></script>
+   <script type="text/javascript" src="/static/scripts/raty/lib/jquery.raty.min.js"></script>
+
   </head>
   <body>
     <h2>{{rated}}</h2>
     <ul>
       {% for r in R %}
-      <li>{{r.stars}} - {{r.rater}} - {{r.review}}</li>
+      <li>
+      <div class="score-demo" data-score="{{r.stars}}"></div>
+         {{r.rater}} - {{r.review}}
+
+      </li>
       {% endfor %}
     </ul>
+    <script type="text/javascript">
+    $(function() {
+      $.fn.raty.defaults.path = '/static/scripts/raty/lib/img';
+
+      $('.score-demo').raty({
+        readOnly: true,
+  score: function() {
+    return $(this).attr('data-score');
+  }
+});
+      // $("#test").html($('#score-demo').raty('score'));
+    })
+      </script>
   </body>
 </html>

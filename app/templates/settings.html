@@ -8,6 +8,7 @@
      <script src="http://stickyjs.com/jquery.sticky.js"></script>
      <link rel="stylesheet" type="text/css" href="/static/styles/colorbox.css">
      <script src="/static/scripts/jquery.colorbox-min.js"></script>
+     <script type="text/javascript" src="/static/scripts/raty/lib/jquery.raty.min.js"></script>
 </head>
 <body style="background-color: #F1F2F2; ">
   <div class="menu">
@@ -61,9 +62,14 @@
 	</div>
         <div style="position:relative; left: 50%; padding-top: 15px; max-width: 800px;">
           <div class="profileInfo" style="padding-bottom: 15px;"><h1> {{first}} {{last}} </h1></div>
+         
           <div style="margin-top: -50"><img style="padding-right: 15px;" src="/static/school.png" height="15"/>{{school}} </div>
           <div><img style="padding-right: 10px;" src="/static/Hat.png" height="15"/>{{major}} </div>
           <div><img style="padding-right: 13px;" src="/static/clock.jpeg" height="15"/>{{year}} </div>
+          <div style="width: 450px;">
+           	<div style="float:left" class="score-demo" data-score="{{avg}}"></div>
+           	<div style="float:right; margin-left: -40px;"><a id="rating" href="/rating/{{username}}"> View Ratings</a></div>
+          </div>
 	  
           <div style="margin-top: 75px; position: relative;">
             <h2 style="left: 60px; position: relative;">Skills</h2>
@@ -116,7 +122,18 @@
       </div>
       <script>
 	$("#message").colorbox({opacity: 0.8});
-	
+	$("#rating").colorbox({opacity: 0.8});
+	$(function() {
+      $.fn.raty.defaults.path = '/static/scripts/raty/lib/img';
+
+      $('.score-demo').raty({
+        readOnly: true,
+        width: false,
+  score: function() {
+    return $(this).attr('data-score');
+  }
+});
+      })
       </script>
 </body>
 </html>

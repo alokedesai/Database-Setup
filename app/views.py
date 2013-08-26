@@ -302,6 +302,22 @@ def rating_user(user):
         R.append({'stars':rating.stars,'rated':uni(rating.rated.username),'rater':uni(rating.rater.username),'review':rating.review})
     return render_template("ratings.html",rated=user,R=R)
 
+@app.route("/rate/<user>")
+@login_required
+def rate(user):
+    
+    global loggedUser
+    logged = loggedUser
+    
+    user = User.query.filter_by(username=user).first()
+    first = uni(user.first_name)
+    email = uni(user.email)
+    gravatar_url = "http://www.gravatar.com/avatar/" + hashlib.md5(email.lower()).hexdigest()
+            # gravatar_url += urllib.urlencode({'default':default, 's':str(size)})
+    gravatar_url += "?" + "s=" + "150" +"&" + "d=" + "mm"
+    return render_template("rate.html",logged = logged, image = gravatar_url, first = first)
+
+
 @app.route("/conversation/<ID>/<user>")
 @login_required
 def conversation(ID,user):

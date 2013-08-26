@@ -389,6 +389,11 @@ background-color: #16A085;
 	background: url(http://link-to-your/image.jpg) no-repeat;
 	
 	}
+.circular.small {
+	width: 150px;
+	height: 150px;
+	
+	}
 	.skill{
  	max-width: 150px;
  	min-width: 60px;

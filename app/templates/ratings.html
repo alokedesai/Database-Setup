@@ -8,13 +8,15 @@
 
   </head>
   <body>
-    <h2>{{rated}}'s Ratings</h2>
+    <h2 style="text-align: center;">{{rated}}'s Reviews</h2>
+
+    <a style="text-decoration:none;" id="message" href="/"><div class="signin-login orange" style="line-height: 50px; text-align:center; font-weight: 300; font-size: 16px; margin: 0 auto; width: 250px" > Rate This User </div></a>
     <ul style="list-style-type: none; width: 500px; word-wrap: break-word;">
       {% for r in R %}
       <li style="padding-top: 10px;">
      <div style="font-weight:700">{{r.rater}}</div>
       <div  class="score-demo" data-score="{{r.stars}}"></div>
-      <div>{{r.review}}</div>
+      <div style="max-height: 250px; overflow-y: scroll;">{{r.review}}</div>
          
 
       

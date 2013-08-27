@@ -119,9 +119,11 @@
 	  
 	</div>
 	<div style="margin-left: 30%; padding-top: 50px;">
+		{% if logged %}
 	  <a style="text-decoration:none;" id="message" href="/converse/{{username}}"><div class="signin-login green" style="line-height: 50px; text-align:center; font-weight: 300; font-size: 16px;" > Message This User </div></a>
-	  
-	  
+	  {% else %}
+	  <a style="text-decoration:none;"  href="/signin"><div class="signin-login green" style="line-height: 50px; text-align:center; font-weight: 300; font-size: 16px;" > Message This User </div></a>
+	  {% endif %}
 	</div> 
       </div>
       <script>

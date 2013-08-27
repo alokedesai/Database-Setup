@@ -35,13 +35,13 @@
 
       <div class="header" style="width: 600px; height: 200px; word-wrap: break-word; margin: 0 auto;">
         <div style="background: url({{image}}); margin-top: 12px; float: left;" class="circular small" >  </div>
-        <div><h2 style="width: 400px; height: 100px; overflow: scroll; padding-top: 60px; float: right; word-wrap: break-word">Rate {{first}} </h2></div>
+        <div><h2 style="width: auto; max-width: 400px; height: 100px; overflow: scroll; padding-top: 60px; float: right; word-wrap: break-word">Rate {{first}} </h2></div>
 
       </div>
       <form action=""  method=post id="review">
         <div class="score-demo"></div>
         <textarea  name="review" class="form-area" rows="5" maxlength = "200" placeholder="Review of {{first}}" cols="50"></textarea>    
-
+        <input type="submit">
       </form>
       
     </div>

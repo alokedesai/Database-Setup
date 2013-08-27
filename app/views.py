@@ -16,7 +16,8 @@ def rating(x):
         total += y.stars
     total = total/len(x)
     return total
-
+def to_int(x):
+    return int(x)
 def uni(x):
     return x.encode('utf-8')
 
@@ -293,28 +294,62 @@ def rating_id(ID):
     return render_template("ratings.html",rated=uni(r.rated.username),R=R)
 
 @app.route("/rating/<user>")
-@login_required
 def rating_user(user):
-    u = User.query.filter_by(username=user).first()
-    r = u.rated.all()
+    user = User.query.filter_by(username=user).first()
+    
+
+    r = user.rated.all()
+    if len(r) == 0:
+        R = None
+    user = uni(user.username)
     R = []
     for rating in r:
         R.append({'stars':rating.stars,'rated':uni(rating.rated.username),'rater':uni(rating.rater.username),'review':rating.review})
     return render_template("ratings.html",rated=user,R=R)
 
-@app.route("/rate/<user>")
+@app.route("/rate/<user>", methods=["GET", "POST"])
 @login_required
 def rate(user):
-    
     global loggedUser
     logged = loggedUser
-    
+
+
+    # redirect to homepage if not logged in
+    if logged == None:
+        return redirect("/")
+
+
+    #get the user who is to be rated based on the url
     user = User.query.filter_by(username=user).first()
+
+    if request.method == "POST":
+        score = (uni(request.form["score"]))
+
+        review = request.form["review"]
+        rated = user
+
+
+        #create ratings object from the data from the form. The rater is the user that is
+        #currently logged in
+
+        rating = Ratings(user, loggedUser, 5, review)
+
+        #add and commit to database
+        db.session.add(rating)
+        db.session.commit()
+        
+        return redirect("/rating/" + user.username)
+    
+    
     first = uni(user.first_name)
     email = uni(user.email)
+
+    #gravatar code for picture
     gravatar_url = "http://www.gravatar.com/avatar/" + hashlib.md5(email.lower()).hexdigest()
-            # gravatar_url += urllib.urlencode({'default':default, 's':str(size)})
     gravatar_url += "?" + "s=" + "150" +"&" + "d=" + "mm"
+    
+
+
     return render_template("rate.html",logged = logged, image = gravatar_url, first = first)
 
 
@@ -452,28 +487,117 @@ def start():
 @login_required
 def converse(username):
     return render_template("compose.html",username=username, first = uni(loggedUser.first_name), last = uni(loggedUser.last_name))
-@app.route("/profile/<username>")
-@login_required 
-def profile(username):
 
-    if User.query.get(current_user.get_id()).role == "developer":
 
+@app.route("/profile/<username>", methods=['GET', 'POST'])
+
+def settings(username):
+    if request.method=='POST':
+        file = request.files['file']
+        u = User.query.filter_by(username=username).first()
+        if file and allowed_file(file.filename):
+            filename = secure_filename(str(loggedUser.id) + file.filename[file.filename.rfind("."):])
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            f = File(filename=filename,user=u)
+            db.session.add(f)
+            db.session.commit()
+            return redirect("/settings/"+username)        
+    if loggedUser != None:
+        if username == uni(loggedUser.username):
+            redirect("/settings/" + username)
+
+    user = User.query.filter_by(username=username).first() 
+    
+    #this needs to be updated to a normal 404 error. This happens when there is no user
+    #with this username
+    if user == None:
+        return "404"
+    if user.role == "developer":
         cS = []
-        cR = []
+        R = []
         s = []
-        exp = []
-        user = User.query.filter_by(username=username).first()
+        exp =[]
+        f=[]
+        
+        email = user.email.encode("utf-8").lower()
+        school = uni(user.school)
+        major = uni(user.major)
+        size = 200
+        default = "http://www.blackdogeducation.com/wp-content/uploads/facebook-default-photo.jpg"
+
+        gravatar_url = "http://www.gravatar.com/avatar/" + hashlib.md5(email.lower()).hexdigest()
+        # gravatar_url += urllib.urlencode({'default':default, 's':str(size)})
+        gravatar_url += "?" + "s=" + str(size) +"&" + "d=" + "mm"
+        
+
+        
         skill = user.skills.all()
-        experience = user.experience.all()
         files = user.files.all()
-        #files = files.filename.encode("utf-8")
-        files = "resume"
+        conversations = user.conversations.all() + user.conversations2.all()
+        experience = user.experience.all()
+        ratings = user.rated.all()
+        if len(ratings) > 0:
+            avg = rating(ratings)
+        else:
+            avg = 0
+        for r in ratings:
+            R.append({'rater': uni(r.rated.username), 'stars': r.stars, 'review': r.review, 'id': r.id})
+        for c in conversations:
+            if c.user.username == username:
+                cS.append({'user': uni(c.user2.username), 'subject': uni(c.subject), 'timestamp': c.timestamp, 'id': c.id})
+            else:
+                cS.append({'user': uni(c.user.username), 'subject': uni(c.subject), 'timestamp': c.timestamp, 'id': c.id})
+       
         for SKILLS in skill:
-            s.append(SKILLS.skill.encode('utf-8'))
+            s.append(uni(SKILLS.skill))
+        for fil in files:
+            f.append(fil.filename.encode("utf-8"))
+        if len(f) == 0:
+            files = None
+        else:
+            files = f[0] 
         for exper in experience:
-            exp.append({"title" : exper.title.encode("utf-8"), "company" : exper.company.encode("utf-8"), "company" : exper.company.encode("utf-8")})
-
-
-        return render_template("profile.html",user = user, username=username,s=s, experience = exp, f =files)
+            exp.append({"title" : exper.title.encode("utf-8"), "company" : exper.company.encode("utf-8"), "description" : exper.description.encode("utf-8")})
+        return render_template("settings.html",username=username,s=s,cS=cS,review=R,avg=avg, experience = exp, profpic = gravatar_url, files = files, logged = loggedUser, year = uni(user.grad_year), major = major, school = school, first = user.first_name.encode("utf-8"), last = user.last_name.encode("utf-8"), curUsername = username)
     else:
+        cS = []
+        s = []
+        user = User.query.filter_by(username=username).first()
+        
+        conversations = user.conversations.all()+user.conversations2.all()
+        experience = user.experience.all()
+        for c in conversations:
+            if c.user.username == username:
+                cS.append({'user': uni(c.user2.username), 'subject': uni(c.subject), 'timestamp': c.timestamp, 'id': c.id})
+            else:
+                cS.append({'user': uni(c.user.username), 'subject': uni(c.subject), 'timestamp': c.timestamp, 'id': c.id})
+        user = User.query.filter_by(username=username).first()
+
+        return render_template("company-settings.html",username=username,s=s,cS=cS)
+
+#OLD PROFILE
+# @app.route("/profile/<username>")
+# @login_required 
+# def profile(username):
+
+#     if User.query.get(current_user.get_id()).role == "developer":
+
+#         cS = []
+#         cR = []
+#         s = []
+#         exp = []
+#         user = User.query.filter_by(username=username).first()
+#         skill = user.skills.all()
+#         experience = user.experience.all()
+#         files = user.files.all()
+#         #files = files.filename.encode("utf-8")
+#         files = "resume"
+#         for SKILLS in skill:
+#             s.append(SKILLS.skill.encode('utf-8'))
+#         for exper in experience:
+#             exp.append({"title" : exper.title.encode("utf-8"), "company" : exper.company.encode("utf-8"), "company" : exper.company.encode("utf-8")})
+
+
+#         return render_template("profile.html",user = user, username=username,s=s, experience = exp, f =files)
+#     else:
         return "not setup yet"

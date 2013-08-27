@@ -8,7 +8,8 @@
 
   </head>
   <body>
-    <h2 style="text-align: center;">{{rated}}'s Reviews</h2>
+    {% if R %}
+    <h2 style="text-align: center;">{{R[0].rated}}'s Reviews</h2>
 
     <a style="text-decoration:none;" id="message" href="/"><div class="signin-login orange" style="line-height: 50px; text-align:center; font-weight: 300; font-size: 16px; margin: 0 auto; width: 250px" > Rate This User </div></a>
     <ul style="list-style-type: none; width: 500px; word-wrap: break-word;">
@@ -24,6 +25,10 @@
      
       {% endfor %}
     </ul>
+    {% else %}
+     <a style="text-decoration:none;" id="message" href="/"><div class="signin-login orange" style="line-height: 50px; text-align:center; font-weight: 300; font-size: 16px; margin: 0 auto; width: 250px" > Rate This User </div></a>
+    <div style="padding-top: 10px; text-align: center;">This user has no ratings</div>
+    {% endif %}
     <script type="text/javascript">
     $(function() {
       $.fn.raty.defaults.path = '/static/scripts/raty/lib/img';

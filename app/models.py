@@ -11,14 +11,15 @@ class Conversation(db.Model):
     user2_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     user2 = db.relationship('User',foreign_keys=[user2_id],
                             backref=db.backref('conversations2',lazy='dynamic'))
-    subject = db.Column(db.String(50),unique=False)
+    subject = db.Column(db.String(256))
+    
     timestamp = db.Column(db.DateTime)
     
     def __init__(self, user, user2, subject):
         self.user = user
         self.user2 = user2
-        self.subject = subject
         self.timestamp = datetime.datetime.utcnow()
+        self.subject = subject
 
 class Ratings(db.Model):
     __tablename__="ratings"
@@ -103,10 +104,16 @@ class File(db.Model):
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     sender = db.Column(db.String(80))
-    body = db.Column(db.String(140))
+    body = db.Column(db.Text)
     timestamp = db.Column(db.DateTime)
     conversation_id = db.Column(db.Integer, db.ForeignKey('conversation.id'))
     conversation = db.relationship("Conversation", backref=db.backref("messages",lazy="dynamic"))
+    
+    def __init__(sender, body, conversation):
+        self.sender = sender
+        self.body = body
+        self.conversation = conversation
+
     def __repr__(self):
         return "<Message %r>" % self.sender
 

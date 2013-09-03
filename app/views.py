@@ -310,6 +310,7 @@ def rating_user(user):
 @app.route("/rate/<user>", methods=["GET", "POST"])
 @login_required
 def rate(user):
+    error = None
     global loggedUser
     logged = loggedUser
 
@@ -322,25 +323,7 @@ def rate(user):
     #get the user who is to be rated based on the url
     user = User.query.filter_by(username=user).first()
 
-    if request.method == "POST":
-        score = (uni(request.form["score"]))
-
-        review = request.form["review"]
-        rated = user
-
-
-        #create ratings object from the data from the form. The rater is the user that is
-        #currently logged in
-
-        rating = Ratings(user, loggedUser, 5, review)
-
-        #add and commit to database
-        db.session.add(rating)
-        db.session.commit()
-        
-        return redirect("/rating/" + user.username)
-    
-    
+ 
     first = uni(user.first_name)
     email = uni(user.email)
 
@@ -348,9 +331,36 @@ def rate(user):
     gravatar_url = "http://www.gravatar.com/avatar/" + hashlib.md5(email.lower()).hexdigest()
     gravatar_url += "?" + "s=" + "150" +"&" + "d=" + "mm"
     
+    if request.method == "POST":
+        score = request.form["score"]
+        if score == unicode(''):
+            error =  "Please enter a star amount more than 0"
+            return render_template("rate.html",logged = logged, image = gravatar_url, first = first, error = error)
+        review = request.form["review"]
+
+        if review == unicode(''):
+            error = "Please enter a review"
+            return render_template("rate.html",logged = logged, image = gravatar_url, first = first, error = error)
+        rated = user
+
+        Rater = loggedUser.username.encode('utf-8');
+        rater = User.query.filter_by(username=Rater).first()
+
+        #create ratings object from the data from the form. The rater is the user that is
+        #currently logged in
+
+        rating = Ratings(user, rater, score, review)
+
+        #add and commit to database
+        db.session.add(rating)
+        db.session.commit()
+        
+        return redirect("/rating/" + user.username)
+    
+   
 
 
-    return render_template("rate.html",logged = logged, image = gravatar_url, first = first)
+    return render_template("rate.html",logged = logged, image = gravatar_url, first = first, error = error)
 
 
 @app.route("/conversation/<ID>/<user>")
@@ -423,7 +433,7 @@ def sresults():
     users = uniquifyo(users)
     names = []
     for user in users:
-        size = 80
+        size = 200
         default = "http://www.blackdogeducation.com/wp-content/uploads/facebook-default-photo.jpg"
 
         gravatar_url = "http://www.gravatar.com/avatar/" + hashlib.md5(uni(user.email).lower()).hexdigest()
@@ -486,12 +496,14 @@ def start():
 @app.route("/converse/<username>",methods=["GET"])
 @login_required
 def converse(username):
-    return render_template("compose.html",username=username, first = uni(loggedUser.first_name), last = uni(loggedUser.last_name))
+    user = User.query.filter_by(username=username).first()
+
+    return render_template("compose.html",username=username, first = uni(loggedUser.first_name), last = uni(loggedUser.last_name), to_first = uni(user.first_name), to_last = uni(user.last_name))
 
 
 @app.route("/profile/<username>", methods=['GET', 'POST'])
 
-def settings(username):
+def profile(username):
     if request.method=='POST':
         file = request.files['file']
         u = User.query.filter_by(username=username).first()
@@ -501,13 +513,16 @@ def settings(username):
             f = File(filename=filename,user=u)
             db.session.add(f)
             db.session.commit()
-            return redirect("/settings/"+username)        
-    if loggedUser != None:
-        if username == uni(loggedUser.username):
-            redirect("/settings/" + username)
+            return redirect("/settings/"+username) 
+
+    #NOT WORKING-- redirect to the user's setting page if the user is trying to access their own profile       
+    if loggedUser:
+        cur_user = User.query.filter_by(username=loggedUser.username).first()
+        if username == uni(cur_user.username):
+            return redirect("/settings/" + username)
 
     user = User.query.filter_by(username=username).first() 
-    
+
     #this needs to be updated to a normal 404 error. This happens when there is no user
     #with this username
     if user == None:

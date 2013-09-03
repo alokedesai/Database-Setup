@@ -8,7 +8,12 @@
   <form action="{{ url_for('start')}}" method=post>
     <input type=text style="display:none;" value="{{first}} {{last}}" name="user"></input>
     <p>From: {{first}} {{last}}</p>
-    <input type=text class="form-login grayoutline green" data-placeholder="To User" placeholder ="To:" name="to"></input></p>
+    <p>To {{to_first}} {{to_last}}</p>
+
+
+
+   <!--  <input type=text class="form-login grayoutline green" data-placeholder="To User" placeholder ="To:" name="to"></input></p> -->
+   
     <input type=text class="form-login grayoutline green" placeholder="Subject" data-placeholder="Subject" name="subject"></input></p>
     <textarea  name="body" class="form-area" rows="5" maxlength = "200" placeholder="Profile description (Companies will be able to see this)." cols="50"></textarea> <p> 
     <input class ="signin-login green" type=submit value="Start Conversation">

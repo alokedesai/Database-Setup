@@ -31,19 +31,35 @@
     </ul>
   </div>
   <div class="page" style="height: 100%;border-bottom: none;">
-    <div class="content" style="margin: 0 auto; width: 60%; min-width: 500px; height: auto; max-width: 1500px;">
-
-      <div class="header" style="width: 600px; height: 200px; word-wrap: break-word; margin: 0 auto;">
+    <div class="content" style="margin: 0 auto; width: 400px; min-width: 500px; height: auto; max-width: 1500px;">
+       {% if error %}
+    <div id="errorContainer" style="display:inherit;">
+    
+    
+    <ul>
+    <li>{{ error }}</li>
+  </ul>
+</div>
+    {% else %}
+    <div id="errorContainer">
+    
+       
+    <ul />
+</div>
+{% endif %}
+      <div class="header" style="width: 600px; height: 200px; word-wrap: break-word;">
         <div style="background: url({{image}}); margin-top: 12px; float: left;" class="circular small" >  </div>
-        <div><h2 style="width: auto; max-width: 400px; height: 100px; overflow: scroll; padding-top: 60px; float: right; word-wrap: break-word">Rate {{first}} </h2></div>
+        <div><h2 style="width: auto; max-width: 400px; height: 100px; overflow: scroll; padding-top: 60px; margin-right: 100px; float: right; word-wrap: break-word">Rate {{first}} </h2></div>
 
       </div>
+      <div style="margin-left: 40px;">
       <form action=""  method=post id="review">
         <div class="score-demo"></div>
-        <textarea  name="review" class="form-area" rows="5" maxlength = "200" placeholder="Review of {{first}}" cols="50"></textarea>    
-        <input type="submit">
+        <textarea  name="review" class="form-area" rows="5" maxlength = "200" placeholder="Review of {{first}}" cols="50"></textarea> 
+        <br/>   
+        <input class ="signin-login green" type=submit value="Rate {{first}}">
       </form>
-      
+      </div>
     </div>
   </div>
   <script type="text/javascript">

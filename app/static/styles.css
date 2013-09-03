@@ -89,17 +89,18 @@ h1{
  }
  .mainimage {
  	width: 100% !important; 
- 	min-width: 1000px;
- 	height: 500px;
- 	background: url("/static/images/splash.png") no-repeat scroll center top transparent;
+ 	
+ 	height: 600px;
+ 	background: url("/static/images/index.png") no-repeat scroll center top transparent;
  	border-bottom: thin solid #D8D8D8;
  	background-size: 100%;
- 	line-height: 400px;
+ 	line-height: 300px;
  	font-size: 50px;
  	font-weight: 700;
  	color: #fff;
  	text-align: center;
  	overflow: scroll;
+ 	text-shadow: rgba(0, 0, 0, 0.498039) 0px 1px 1px;
 
 
  }

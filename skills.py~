@@ -1,3 +1,0 @@
-from app import db, Skills
-
-skills = ["Java", "JavaScript","C","C++","PHP","HTML","CSS","Ruby","Python","Objective C"]

@@ -1,2 +1,0 @@
-New migration saved as /home/ryanluo/repos/Database-Setup/db_repository/versions/009_migration.py
-Current database version: 9
